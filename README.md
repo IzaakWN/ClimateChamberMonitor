@@ -27,7 +27,7 @@ python run_manual.py -T 18.0
 ```
 
 ## Program run
-Run and monitor the climate chamber with a manual run to a given target temperature
+Run and monitor program specified by number via `-p` flag:
 ```
 python run_program.py -p 2
 ```
