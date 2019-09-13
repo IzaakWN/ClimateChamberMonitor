@@ -67,4 +67,4 @@ print 'temp  =', getTemp()
 print 'air   =', getAir()
 print 'dryer =', getDryer()
 
-client.close
+client.close()
