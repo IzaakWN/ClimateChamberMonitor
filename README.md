@@ -12,12 +12,12 @@ Monitor the climate chamber in a GUI window and write to a log file `monitor.dat
 ```
 python monitor.py
 ```
-Run in batch mode (no GUI window, only write to log file):
+Run in batch mode (no GUI window, only write to log file) with the `-b` flag:
 ```
 python monitor.py -b
 ```
 The script stops until you close the window, or in batch mode, interrupt it with `CTRL + C`.
-A maximum monitoring time (in seconds) can be set with the `-t` option.
+A maximum monitoring time in seconds can be set with the `-t` option.
 Sampling rate of temperature reading can be set in seconds with the `-s` flag.
 
 ## Manual run
