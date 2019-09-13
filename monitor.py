@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
-import numpy as np
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      forceWarmUp, stopClimateBox, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus, getTemp, getSetp, getDewp, getAir, getDryer
@@ -61,7 +60,7 @@ def monitor(client,**kwargs):
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.15*twidth)
   if nsamples>0 and dtime<0:
-    dtime = tstep*nsamples
+    dtime   = tstep*nsamples
   
   # BATCH MODE
   if batchmode:
@@ -70,8 +69,8 @@ def monitor(client,**kwargs):
     with open(logname,'a+') as logfile:
       logger = csv.writer(logfile)
       print "Monitoring climate chamber..."
-      tval  = datetime.datetime.now()
-      tstop = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
+      tval   = datetime.datetime.now()
+      tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
       while not tstop or tstop>tval:
         tval = datetime.datetime.now()
         temp = getTemp(client)
@@ -98,8 +97,8 @@ def monitor(client,**kwargs):
       print "Loading old monitoring data..."
       with open(logname,'r') as logfile:
         logreader = csv.reader(logfile)
-        tnow  = datetime.datetime.now()
-        tback = tnow - dtback
+        tnow   = datetime.datetime.now()
+        tback  = tnow - dtback
         for stamp, temp, setp, dewp, air, dry, run in logreader:
           tval = datetime.datetime.strptime(stamp,tformat)
           if tval<tback: continue
@@ -137,8 +136,8 @@ def monitor(client,**kwargs):
       #axis2.yaxis.set_tick_params(fontsize=14)
       axis1.grid(axis='x',which='minor',linewidth=0.2)
       axis1.grid(axis='y',which='major',linewidth=0.2)
-      airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2)
-      dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=1)
+      airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
+      dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=1,markersize=4)
       axis1.legend(loc='center left',framealpha=0)
       
       # TEMPERATURE SUBPLOT
@@ -156,11 +155,11 @@ def monitor(client,**kwargs):
       #axis2.set_xlabel("Time",fontsize=16)
       axis2.set_ylabel("Temperature [$^\circ$C]",fontsize=16)
       axis2.grid(axis='x',which='minor',linewidth=0.2)
-      axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='-')
+      axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
       axis2.grid(axis='y',which='major',linewidth=0.2)
-      templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2)
-      setpline, = axis2.plot(tvals,setpvals,color='grey',marker='.',label="Target temp.",linewidth=0.5)
-      dewpline, = axis2.plot(tvals,dewpvals,color='blue',marker='^',label="Dummy dewpoint",linewidth=1)
+      templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
+      setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
+      dewpline, = axis2.plot(tvals,dewpvals,color='blue',marker='^',label="Dummy dewpoint",linewidth=1,markersize=5)
       axis2.legend(loc='upper left',framealpha=0)
       
       # TEXT
