@@ -243,23 +243,29 @@ def checkActiveWarnings(client,**kwargs):
   return nactive
   
 
-def openActiveWarnings(client,**kwargs):
-  """Open active messages; alarms and warnings only."""
-  print "MESSAGES NOT IMPLEMENTED!"
+def getActiveWarnings(client,**kwargs):
+  """Get active messages; by default alarms and warnings only."""
   nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
-  if nmsg>0:
-    allmessages = ""
-    for i in xrange(1,nmsg+1):
-      status  = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
-      mtype   = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
-      if status==1 and mtype & kwargs.get('type',3): # alarm or warning
-        message = str(executeSimServCmd(client,'GET MSG TEXT',[i])[0])
-        mtext = "ALARM!" if mtype & 1 else "Warning!" if mtype & 2 else "Info:"
-        allmessages += "\n  %s: %s"%(mtext,message)
-    if allmessages:
-      allmessages = "Found the following active alarms/warnings:"+allmessages
-      print allmessages
-      showinfo("Found active warnings",allmessages)
+  messages = [ ]
+  for i in xrange(1,nmsg+1):
+    status  = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
+    mtype   = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
+    if status==1 and mtype & kwargs.get('type',3): # alarm or warning
+      message = str(executeSimServCmd(client,'GET MSG TEXT',[i])[0])
+      mtext = "ALARM!" if mtype & 1 else "Warning!" if mtype & 2 else "Info:"
+      messages.append("%s: %s"%(mtext,message))
+  return messages
+  
+
+def openActiveWarnings(client,**kwargs):
+  """Open active messages; by default alarms and warnings only."""
+  print "MESSAGES NOT TESTED!"
+  nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
+  messages = getActiveWarnings(client,**kwargs)
+  if messages:
+    allmessages = "Found the following active alarms/warnings:"+"\n  ".join(messages)
+    print allmessages
+    showinfo("Found active warnings",allmessages)
   
 
 def getRunStatus(client):
