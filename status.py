@@ -6,7 +6,7 @@ from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
                      getRunStatus, checkActiveWarnings, openActiveWarnings,\
                      getTemp, getSetp, getDewp, getAir, getDryer
 
-def addRow(col1,col2,just=40):
+def addRow(col1,col2,just=38):
   return '\n  ' + col1.ljust(just) + '  ' + col2.ljust(just)
 
 def getCurrentStatus(**kwargs):
