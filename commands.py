@@ -229,19 +229,19 @@ def stopClimateBox(client):
     print "Abort interuption!"
   
 
-def checkActiveWarnings(client):
+def checkActiveWarnings(client,**kwargs):
   nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
   nactive = 0
   if nmsg>0:
     for i in xrange(1,nmsg+1):
       status = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
-      type   = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
-      if status==1 and type & 3: # alarm or warning
+      mtype  = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
+      if status==1 and mtype & kwargs.get('type',3): # alarm or warning
         nactive += 1
   return nactive
   
 
-def openActiveWarnings(client):
+def openActiveWarnings(client,**kwargs):
   """Open active messages; alarms and warnings only."""
   print "MESSAGES NOT IMPLEMENTED!"
   nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
@@ -249,10 +249,11 @@ def openActiveWarnings(client):
     allmessages = ""
     for i in xrange(1,nmsg+1):
       status  = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
-      type    = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
-      if status==1 and type & 3: # alarm or warning
+      mtype   = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
+      if status==1 and mtype & kwargs.get('type',3): # alarm or warning
         message = str(executeSimServCmd(client,'GET MSG TEXT',[i])[0])
-        allmessages += "\n  %s: %s"%("ALARM!" if type & 1 else "Warning!",message)
+        mtext = "ALARM!" if mtype & 1 else "Warning!" if mtype & 2 else "Info:"
+        allmessages += "\n  %s: %s"%(mtext,message)
     if allmessages:
       allmessages = "Found the following active alarms/warnings:"+allmessages
       print allmessages
@@ -272,7 +273,7 @@ def getRunStatus(client):
   
 
 # SHORT HAND COMMANDS
-getDewp  = lambda c: 0
+getDewp  = lambda c: 18.0
 getTemp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR VAL',[1])[0])
 getSetp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR SETPOINT',[1])[0])
 getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
