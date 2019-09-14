@@ -14,22 +14,43 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import numpy as np
-from monitor import setTimeAxisMinorLocators
 
+
+def setTimeAxisMinorLocators(axis,twidth=None):
+  """Help function to set time locators."""
+  if twidth==None:
+    tmin, tmax = [mdates.num2date(t).replace(tzinfo=None) for t in axis.get_xlim()]
+    twidth = (tmax - tmin).total_seconds()
+  if twidth>700:
+    axis.xaxis.set_minor_locator(mdates.MinuteLocator(interval=int(twidth/400)))
+  elif twidth>400:
+    axis.xaxis.set_minor_locator(mdates.MinuteLocator())
+  elif twidth>200:
+    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[0,30]))
+  elif twidth>135:
+    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[0,20,40]))
+  elif twidth>80:
+    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[i*10 for i in xrange(6)]))
+  else:
+    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[i*2 for i in xrange(30)]))
+  
 
 def monitor(**kwargs):
   """Start monitoring."""
   
   # SETTINGS
-  batchmode = kwargs.get('batch',      False    )
-  logname   = kwargs.get('out',      "data.dat" )
-  figname   = kwargs.get('figname',  "plot"     )
-  twidth    = kwargs.get('twidth',      1000    )
-  ymin      = kwargs.get('ymin',          10    )
-  ymax      = kwargs.get('ymax',          40    )
+  batchmode = kwargs.get('batch',  False      )
+  logname   = kwargs.get('log',    "data.dat" )
+  figname   = kwargs.get('name',   "plot"     )
+  title     = kwargs.get('title',  None       )
+  twidth    = kwargs.get('twidth', 1000       )
+  ymin      = kwargs.get('ymin',     10       )
+  ymax      = kwargs.get('ymax',     40       )
   dtback    = datetime.timedelta(days=1) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.02*twidth)
+  if title==None:
+    title = "Climate chamber monitor"
   
   # LOAD PREVIOUS DATA
   tformat   = '%d-%m-%Y %H:%M:%S'
@@ -62,18 +83,20 @@ def monitor(**kwargs):
   # PLOT
   print "Making plot '%s'..."%figname
   fig   = plt.figure(figsize=(10,6),dpi=100)
-  grid  = gridspec.GridSpec(2,1,height_ratios=[1,3],hspace=0.04,left=0.07,right=0.96,top=0.93,bottom=0.08)
+  grid  = gridspec.GridSpec(2,1,height_ratios=[1,3],hspace=0.04,left=0.07,right=0.96,top=0.92,bottom=0.08)
   
   # STATUS SUBPLOT
   axis1 = plt.subplot(grid[0])
-  axis1.set_title('Monitoring')
-  axis1.axis([tmin, tmax, -0.2, 1.2])
+  axis1.set_title(title,fontsize=20) #,pad=10
+  axis1.title.set_position([.5,1.05])
+  axis1.axis([tmin,tmax,-0.2,1.2])
   axis1.xaxis.set_tick_params(which='both',labelbottom=False)
   #axis1.set_yticks([0,1],['OFF','ON'])
   axis1.set_yticks([0,1])
   axis1.set_yticklabels(['OFF','ON'],fontsize=14)
   #axis2.yaxis.set_tick_params(fontsize=14)
   axis1.grid(axis='x',which='minor',linewidth=0.2)
+  axis1.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
   axis1.grid(axis='y',which='major',linewidth=0.2)
   airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
   dryline, = axis1.plot(tvals,dryvals,color='blue',marker='v',label="Dryer",linewidth=1,markersize=4)
@@ -88,8 +111,8 @@ def monitor(**kwargs):
   axis2.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M:%S"))
   axis2.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
   axis2.yaxis.set_tick_params(labelsize=14)
-  axis2.xaxis.set_tick_params(pad=2,which='minor')
-  axis2.xaxis.set_tick_params(pad=16)
+  axis2.xaxis.set_tick_params(labelsize=12,pad=4,which='minor')
+  axis2.xaxis.set_tick_params(labelsize=12,pad=18,labelcolor='#520000')
   #axis2.set_xlabel("Time",fontsize=16)
   axis2.set_ylabel("Temperature [$^\circ$C]",fontsize=16)
   axis2.grid(axis='x',which='minor',linewidth=0.2)
@@ -102,33 +125,33 @@ def monitor(**kwargs):
   
   #fig.canvas.draw()
   #plt.show(block=True)
-  fig.savefig(figname+".png")
-  fig.savefig(figname+".pdf")
+  fig.savefig(figname+".png",dpi=200)
+  fig.savefig(figname+".pdf",dpi=200)
   
 
 def main(args):
   
-  # PARAMETERS
-  kwargs = {
-    'batch':     args.batchmode,
-    'out':       args.output,    # name of log file
-    'twidth':    args.twidth,    # width of time axis in seconds
-  }
-  
   # MONITOR
-  monitor(**kwargs)
+  monitor(log=args.input,name=args.output,
+          twidth=args.twidth,title=args.title,batch=args.batchmode)
   
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
-  description = '''Monitor climate chamber.'''
-  parser = ArgumentParser(prog="monitor",description=description,epilog="Good luck!")
+  description = '''Plot climate chamber monitoring data.'''
+  parser = ArgumentParser(prog="plotter",description=description,epilog="Good luck!")
   parser.add_argument('-w', '--width',     dest='twidth', type=float, default=2400, action='store',
                                            help="width of time axis in seconds" )
+  parser.add_argument('-i', '--input',     dest='input', type=str, default="monitor.dat", action='store',
+                                           help="input log file with monitoring data (csv format)" )
   parser.add_argument('-o', '--output',    dest='output', type=str, default="monitor.dat", action='store',
-                                           help="output log file with monitoring data (csv format)" )
+                                           help="name of output plot (png and pdf)" )
+  parser.add_argument('-t', '--title',     dest='title', type=str, default=None, action='store',
+                                           help="title of the plot" )
   parser.add_argument('-b', '--batch',     dest='batchmode', default=False, action='store_true',
                                            help="monitor in batch mode (no GUI window)" )
+  parser.add_argument('-m', '--monitor',   dest='monitor', default=False, action='store_true',
+                                           help="monitor warnings and alarms" )
   parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='store_true',
                                            help="set verbose" )
   args = parser.parse_args()

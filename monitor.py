@@ -15,34 +15,11 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
+from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      forceWarmUp, stopClimateBox, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus, getTemp, getSetp, getDewp, getAir, getDryer
 
-
-def onTimeAxisChange(axis):
-  """If time axis has changed: update minor locators."""
-  setTimeAxisMinorLocators(axis)
-  
-
-def setTimeAxisMinorLocators(axis,twidth=None):
-  """Help function to set time locators."""
-  if twidth==None:
-    tmin, tmax = [mdates.num2date(t).replace(tzinfo=None) for t in axis.get_xlim()]
-    twidth = (tmax - tmin).total_seconds()
-  if twidth>700:
-    axis.xaxis.set_minor_locator(mdates.MinuteLocator(interval=int(twidth/400)))
-  elif twidth>400:
-    axis.xaxis.set_minor_locator(mdates.MinuteLocator())
-  elif twidth>200:
-    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[0,30]))
-  elif twidth>135:
-    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[0,20,40]))
-  elif twidth>80:
-    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[i*10 for i in xrange(6)]))
-  else:
-    axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[i*2 for i in xrange(30)]))
-  
 
 def monitor(client,**kwargs):
   """Start monitoring."""
@@ -59,6 +36,7 @@ def monitor(client,**kwargs):
   dtback    = datetime.timedelta(days=1) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.15*twidth)
+  title     = "Climate chamber monitor"
   if nsamples>0 and dtime<0:
     dtime   = tstep*nsamples
   
@@ -123,11 +101,12 @@ def monitor(client,**kwargs):
       plt.ion()
       #fig, axes = plt.subplots(2, sharex=True) #, gridspec_kw={'hspace': 0}
       fig   = plt.figure(figsize=(10,6),dpi=100)
-      grid  = gridspec.GridSpec(2,1,height_ratios=[1,3],hspace=0.04,left=0.07,right=0.96,top=0.93,bottom=0.16)
+      grid  = gridspec.GridSpec(2,1,height_ratios=[1,3],hspace=0.04,left=0.07,right=0.96,top=0.92,bottom=0.16)
       
       # STATUS SUBPLOT
       axis1 = plt.subplot(grid[0])
-      axis1.set_title('Monitoring')
+      axis1.set_title(title,fontsize=20) #,pad=10
+      axis1.title.set_position([.5, 1.05])
       axis1.axis([tmin, tmax, -0.2, 1.2])
       axis1.xaxis.set_tick_params(which='both',labelbottom=False)
       #axis1.set_yticks([0,1],['OFF','ON'])
@@ -149,9 +128,9 @@ def monitor(client,**kwargs):
       axis2.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M:%S"))
       axis2.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
       axis2.yaxis.set_tick_params(labelsize=14)
-      axis2.xaxis.set_tick_params(pad=-0.05,which='minor')
-      axis2.xaxis.set_tick_params(pad=14)
-      axis2.callbacks.connect('xlim_changed',onTimeAxisChange)
+      axis2.xaxis.set_tick_params(labelsize=12,pad=-0.05,which='minor')
+      axis2.xaxis.set_tick_params(labelsize=12,pad=14,labelcolor='#520000')
+      axis2.callbacks.connect('xlim_changed',setTimeAxisMinorLocators)
       #axis2.set_xlabel("Time",fontsize=16)
       axis2.set_ylabel("Temperature [$^\circ$C]",fontsize=16)
       axis2.grid(axis='x',which='minor',linewidth=0.2)
@@ -277,12 +256,13 @@ def main(args):
   }
   
   # CONNECT
+  print "Connecting to climate chamber..."
   client = connectClimateChamber()
   
   # MONITOR
   monitor(client,**kwargs)
   
-  # CLOSE
+  # DISCONNECT
   print "Closing connection..."
   client.close()
   
