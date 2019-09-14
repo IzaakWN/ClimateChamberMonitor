@@ -24,10 +24,10 @@ def getCurrentStatus(**kwargs):
     tnow = datetime.datetime.now()
     if client==None:
       string  = "Climate chamber not found in network (%s)."%(ip)
-      string += "\n  time stamp:  %s"%(tval.strftime(tformat))
+      string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
     else:
       string  = "Climate chamber's currect status (%s):"%(ip)
-      string += "\n  time stamp:  %s"%(tval.strftime(tformat))
+      string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
       string += "\n  setpoint:    %8.3f"%(getSetp(client))
       string += "\n  temperature: %8.3f"%(getTemp(client))
       string += "\n  dewpoint:    %8.3f"%(getDewp(client))
