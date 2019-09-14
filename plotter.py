@@ -144,7 +144,7 @@ if __name__ == '__main__':
                                            help="width of time axis in seconds" )
   parser.add_argument('-i', '--input',     dest='input', type=str, default="monitor.dat", action='store',
                                            help="input log file with monitoring data (csv format)" )
-  parser.add_argument('-o', '--output',    dest='output', type=str, default="monitor.dat", action='store',
+  parser.add_argument('-o', '--output',    dest='output', type=str, default="plot", action='store',
                                            help="name of output plot (png and pdf)" )
   parser.add_argument('-t', '--title',     dest='title', type=str, default=None, action='store',
                                            help="title of the plot" )
