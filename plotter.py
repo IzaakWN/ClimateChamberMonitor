@@ -46,7 +46,7 @@ def monitor(**kwargs):
   twidth    = kwargs.get('twidth', 1000       )
   ymin      = kwargs.get('ymin',     10       )
   ymax      = kwargs.get('ymax',     40       )
-  dtback    = datetime.timedelta(days=1) # load only 1-day backlog for plot
+  dtback    = datetime.timedelta(days=2) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.02*twidth)
   if title==None:
