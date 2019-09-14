@@ -4,7 +4,7 @@ import os, sys, time, datetime
 import socket
 sys.path.append(os.path.dirname(__file__))
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
-                     getRunStatus, checkActiveWarnings, openActiveWarnings,\
+                     getRunStatus, checkActiveWarnings, getActiveWarnings,\
                      getTemp, getSetp, getDewp, getAir, getDryer
 
 
@@ -89,10 +89,10 @@ def getCurrentStatus(**kwargs):
       print "Writing status to '%s'..."%logname
       logfile.write(string)
     if nalarms>0:
-      alarms   = getActiveWarnings(client,type=1)
+      messages = getActiveWarnings(client,type=1)
       writeMessages(logname,messages,tag="alarms")
     if nwarns>0:
-      warnings = getActiveWarnings(client,type=2)
+      messages = getActiveWarnings(client,type=2)
       writeMessages(logname,messages,tag="warnings")
     if nmsgs>0:
       messages = getActiveWarnings(client,type=4)

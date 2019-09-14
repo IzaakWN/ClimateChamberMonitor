@@ -253,7 +253,7 @@ def getActiveWarnings(client,**kwargs):
     if status==1 and mtype & kwargs.get('type',3): # alarm or warning
       message = str(executeSimServCmd(client,'GET MSG TEXT',[i])[0])
       mtext = "ALARM!" if mtype & 1 else "Warning!" if mtype & 2 else "Info:"
-      messages.append("%s: %s"%(mtext,message))
+      messages.append("%s %s"%(mtext,message))
   return messages
   
 
