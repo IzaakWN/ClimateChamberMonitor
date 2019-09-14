@@ -59,6 +59,7 @@ def stopProgram(client):
 def main(args):
   
   # CONNECT
+  print "Connecting to climate chamber..."
   client = connectClimateChamber()
   
   # RUN & MONITOR
@@ -69,7 +70,7 @@ def main(args):
                  nsamples=args.nsamples,tstep=args.stepsize,twidth=args.twidth)
   stopProgram(client)
   
-  # CLOSE
+  # DISCONNECT
   print "Closing connection..."
   client.close()
   
