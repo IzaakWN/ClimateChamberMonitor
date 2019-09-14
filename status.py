@@ -8,7 +8,7 @@ from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
                      getTemp, getSetp, getDewp, getAir, getDryer
 
 def addRow(col1,col2,just=38):
-  return '\n  ' + col1.ljust(just) + '  ' + col2.ljust(just)
+  return '\n    ' + col1.ljust(just) + '    ' + col2.ljust(just)
 
 def getCurrentStatus(**kwargs):
   """Get current status."""
@@ -27,11 +27,11 @@ def getCurrentStatus(**kwargs):
   with open(logname,'w+') as logfile:
     tnow = datetime.datetime.now()
     if client==None:
-      string  = "Climate chamber not found in network."
-      string += "\n  IP address:  %s"%(ip)
-      string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
+      string  = "  Climate chamber not found in network."
+      string += "\n    IP address:  %s"%(ip)
+      string += "\n    time stamp:  %s"%(tnow.strftime(tformat))
     else:
-      string  = "Climate chamber's currect status: %s"%(getRunStatus(client))
+      string  = "  Climate chamber's currect status: %s"%(getRunStatus(client))
       string += addRow("IP address:  %s"%(ip),
                        "compr. air:  %4s"%('ON' if getAir(client)==1 else 'OFF'))
       string += addRow("time stamp:  %s"%(tnow.strftime(tformat)),
