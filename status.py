@@ -23,19 +23,21 @@ def getCurrentStatus(**kwargs):
   with open(logname,'w+') as logfile:
     tnow = datetime.datetime.now()
     if client==None:
-      string  = "Climate chamber not found in network (%s)."%(ip)
+      string  = "Climate chamber not found in network."
+      string += "\n  IP address:  %s"%(ip)
       string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
     else:
-      string  = "Climate chamber's currect status (%s):"%(ip)
+      string  = "Climate chamber's currect status: %s"%(getRunStatus(client))
+      string += "\n  IP address:  %s"%(ip)
       string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
       string += "\n  setpoint:    %8.3f"%(getSetp(client))
       string += "\n  temperature: %8.3f"%(getTemp(client))
       string += "\n  dewpoint:    %8.3f"%(getDewp(client))
-      string += "\n  compr. air:  %3s"%('ON' if getAir(client)==1 else 'OFF')
-      string += "\n  dryer:       %3s"%('ON' if getDryer(client)==1 else 'OFF')
-      string += "\n  alarms:      %d"%(checkActiveWarnings(client,type=1))
-      string += "\n  warnings:    %d"%(checkActiveWarnings(client,type=2))
-      string += "\n  messages:    %d"%(checkActiveWarnings(client,type=4))
+      string += "\n  compr. air:  %4s"%('ON' if getAir(client)==1 else 'OFF')
+      string += "\n  dryer:       %4s"%('ON' if getDryer(client)==1 else 'OFF')
+      string += "\n  alarms:      %4d"%(checkActiveWarnings(client,type=1))
+      string += "\n  warnings:    %4d"%(checkActiveWarnings(client,type=2))
+      string += "\n  messages:    %4d"%(checkActiveWarnings(client,type=4))
     print string
     logfile.write(string)   
   print "Status check finished!"
@@ -55,7 +57,7 @@ if __name__ == '__main__':
   from argparse import ArgumentParser
   description = '''Monitor climate chamber.'''
   parser = ArgumentParser(prog="monitor",description=description,epilog="Good luck!")
-  parser.add_argument('-o', '--output',    dest='output', type=str, default="monitor.dat", action='store',
+  parser.add_argument('-o', '--output',    dest='output', type=str, default="status.txt", action='store',
                                            help="output log file with monitoring data (csv format)" )
   parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='store_true',
                                            help="set verbose" )
