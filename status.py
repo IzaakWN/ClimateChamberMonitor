@@ -33,9 +33,9 @@ def getCurrentStatus(**kwargs):
       string += "\n  dewpoint:    %8.3f"%(getDewp(client))
       string += "\n  compr. air:  %3s"%('ON' if getAir(client)==1 else 'OFF')
       string += "\n  dryer:       %3s"%('ON' if getDryer(client)==1 else 'OFF')
-      string += "\n  alarms:      %d"%(checkActiveWarnings(client,1))
-      string += "\n  warnings:    %d"%(checkActiveWarnings(client,2))
-      string += "\n  messages:    %d"%(checkActiveWarnings(client,4))
+      string += "\n  alarms:      %d"%(checkActiveWarnings(client,type=1))
+      string += "\n  warnings:    %d"%(checkActiveWarnings(client,type=2))
+      string += "\n  messages:    %d"%(checkActiveWarnings(client,type=4))
     print string
     logfile.write(string)   
   print "Status check finished!"
