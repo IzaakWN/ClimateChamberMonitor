@@ -100,7 +100,7 @@ def monitor(**kwargs):
   axis1.grid(axis='y',which='major',linewidth=0.2)
   airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
   dryline, = axis1.plot(tvals,dryvals,color='blue',marker='v',label="Dryer",linewidth=1,markersize=4)
-  axis1.legend(loc='center left',framealpha=0)
+  axis1.legend(loc='center left',framealpha=0,fontsize=14)
   
   # TEMPERATURE SUBPLOT
   axis2 = plt.subplot(grid[1],sharex=axis1)
@@ -121,7 +121,7 @@ def monitor(**kwargs):
   templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
   setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
   dewpline, = axis2.plot(tvals,dewpvals,color='blue',marker='v',label="Dummy dewpoint",linewidth=1,markersize=5)
-  axis2.legend(loc='upper left',framealpha=0)
+  axis2.legend(loc='upper left',framealpha=0,fontsize=14)
   
   #fig.canvas.draw()
   #plt.show(block=True)
