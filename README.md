@@ -6,6 +6,10 @@ Clone this repository:
 ```
 git clone https://github.com/IzaakWN/ClimateChamberMonitor ClimateChamberMonitor
 ```
+And set the correct IP address of LabEvent in `commands.py`, e.g.
+```
+sed "s/ip='[^']*'/ip='130.60.164.144'/g" -i commands.py
+```
 
 ## Monitor
 Monitor the climate chamber in a GUI window and write to a log file `monitor.dat` (csv format) with
