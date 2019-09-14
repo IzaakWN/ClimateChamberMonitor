@@ -2,6 +2,7 @@
 # coding: latin-1
 import os, sys, time, datetime
 import socket
+sys.path.append(os.path.dirname(__file__))
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      getRunStatus, checkActiveWarnings, openActiveWarnings,\
                      getTemp, getSetp, getDewp, getAir, getDryer

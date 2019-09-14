@@ -1,11 +1,13 @@
 #! /usr/bin/env python
 # coding: latin-1
-import sys
+import os, sys
 import socket
+sys.path.append(os.path.dirname(__file__))
 from utils import warning
-import Tkinter
-from tkMessageBox import askyesno, showinfo
-root = Tkinter.Tk(); root.withdraw() # import before matplotlib
+if 'DISPLAY' in os.environ:
+  import Tkinter
+  from tkMessageBox import askyesno, showinfo
+  root = Tkinter.Tk(); root.withdraw() # import before matplotlib
 
 # SIMSERV COMMAND
 # CMD + SR + CBR + CR
