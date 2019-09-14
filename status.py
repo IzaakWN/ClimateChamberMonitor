@@ -7,7 +7,7 @@ from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
                      getTemp, getSetp, getDewp, getAir, getDryer
 
 
-def getCurrentStatus(client,**kwargs):
+def getCurrentStatus(**kwargs):
   """Get current status."""
   
   # SETTINGS
@@ -48,7 +48,7 @@ def getCurrentStatus(client,**kwargs):
 def main(args):
   
   # CHECK STATUS
-  getCurrentStatus(client,out=args.output)
+  getCurrentStatus(out=args.output)
   
 
 if __name__ == '__main__':
