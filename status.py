@@ -6,8 +6,8 @@ from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
                      getRunStatus, checkActiveWarnings, openActiveWarnings,\
                      getTemp, getSetp, getDewp, getAir, getDryer
 
-def addRow(string,col1,col2,just=26):
-  return string + '\n  ' + col1.ljust(just) + '  ' + col2.ljust(just)
+def addRow(col1,col2,just=26):
+  return '\n  ' + col1.ljust(just) + '  ' + col2.ljust(just)
 
 def getCurrentStatus(**kwargs):
   """Get current status."""
@@ -31,16 +31,16 @@ def getCurrentStatus(**kwargs):
       string += "\n  time stamp:  %s"%(tnow.strftime(tformat))
     else:
       string  = "Climate chamber's currect status: %s"%(getRunStatus(client))
-      addRow(string,"IP address:  %s"%(ip),
-                    "compr. air:  %4s"%('ON' if getAir(client)==1 else 'OFF'))
-      addRow(string,"time stamp:  %s"%(tnow.strftime(tformat)),
-                    "dryer:       %4s"%('ON' if getDryer(client)==1 else 'OFF'))
-      addRow(string,"setpoint:    %8.3f"%(getSetp(client)),
-                    "alarms:      %4d"%(checkActiveWarnings(client,type=1)))
-      addRow(string,"temperature: %8.3f"%(getTemp(client)),
-                    "warnings:    %4d"%(checkActiveWarnings(client,type=2)))
-      addRow(string,"dewpoint:    %8.3f"%(getDewp(client)),
-                    "messages:    %4d"%(checkActiveWarnings(client,type=4)))
+      string += addRow("IP address:  %s"%(ip),
+                       "compr. air:  %4s"%('ON' if getAir(client)==1 else 'OFF'))
+      string += addRow("time stamp:  %s"%(tnow.strftime(tformat)),
+                       "dryer:       %4s"%('ON' if getDryer(client)==1 else 'OFF'))
+      string += addRow("setpoint:    %8.3f"%(getSetp(client)),
+                       "alarms:      %4d"%(checkActiveWarnings(client,type=1)))
+      string += addRow("temperature: %8.3f"%(getTemp(client)),
+                       "warnings:    %4d"%(checkActiveWarnings(client,type=2)))
+      string += addRow("dewpoint:    %8.3f"%(getDewp(client)),
+                       "messages:    %4d"%(checkActiveWarnings(client,type=4)))
     print "Writing to '%s'"%logname
     print string
     logfile.write(string)   
