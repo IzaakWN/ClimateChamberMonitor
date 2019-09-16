@@ -44,7 +44,7 @@ def startProgram(client,prgmid,nruns=1):
   """Start manual run."""
   checkProgram(client,prgmid)
   print "Starting program %s..."%(prgmid)
-  executeSimServCmd(client,'START PRGM_NUM',[prgmid,nruns])
+  executeSimServCmd(client,'START PRGM',[prgmid,nruns])
   #prgmname = str(executeSimServCmd(client,'GET PRGM NAME',[prgmid])[0])
   #time.sleep(4)
   #print "Started pogram '%s'"%(prgmname)
@@ -53,7 +53,7 @@ def startProgram(client,prgmid,nruns=1):
 def stopProgram(client):
   """Stop manual run."""
   print "Stopping program..."
-  executeSimServCmd(client,'START MANUAL',[1,0])
+  executeSimServCmd(client,'STOP PRGM')
   
 
 def main(args):

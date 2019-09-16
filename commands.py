@@ -136,8 +136,10 @@ cmd_dict['SET'] = {
 }
 cmd_dict['START'] = {
   'MANUAL':          14001, #start manual mode: 1 + <0: off, 1: on> 
-  'PRGM_NUM':        19014, # <No.> + <number of runthroughs>
-  'PRGM':            19015,
+  'PRGM':            19014, # <No.> + <number of runthroughs>
+}
+cmd_dict['STOP'] = {
+  'PRGM':            19015, # stop currently running program
 }
 cmd_dict['RESET'] = {
   'ERROR':           17012, # reset all errors
@@ -202,7 +204,7 @@ def forceWarmUp(client,target=24,gradient=1):
   """Force warm up."""
   if askyesno("Verify","Really force warm-up?"):
     if int(executeSimServCmd(client,'GET PRGM STATUS')[0])!=0:
-      warning("NOT IMPLEMENTED FOR PROGRAM")
+      executeSimServCmd(client,'STOP PRGM')
     assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
     warning("Force warm up to target temperature %.1f degrees C with a gradient of %.1f K/min..."%(target,gradient))
     executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
@@ -222,11 +224,12 @@ def stopClimateBox(client):
   """Stop climate box."""
   pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
   if askyesno("Verify","Really stop %s?"%("manual run" if pgmstatus==0 else "program")):
-    if pgmstatus!=0:
-      warning("NOT IMPLEMENTED FOR PROGRAM")
     temp = getTemp(client)
     warning("Stop running at temperature %.1f degrees C; no warm-up!"%(temp))
-    executeSimServCmd(client,'START MANUAL',[1,0])
+    if pgmstatus!=0:
+      executeSimServCmd(client,'STOP PRGM')
+    else:
+      executeSimServCmd(client,'START MANUAL',[1,0])
   else:
     print "Abort interuption!"
   
