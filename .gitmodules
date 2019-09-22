@@ -1,0 +1,6 @@
+[submodule "statsd"]
+	path = statsd
+	url = https://github.com/statsd/statsd.git
+[submodule "yoctolib_python"]
+	path = yoctolib_python
+	url = https://github.com/yoctopuce/yoctolib_python.git
