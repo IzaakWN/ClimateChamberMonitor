@@ -10,9 +10,9 @@ And set the correct IP address of LabEvent in `commands.py`, e.g.
 ```
 sed "s/ip='[^']*'/ip='130.60.164.144'/g" -i commands.py
 ```
-Install Yocto python libraries:
+Submodules are automatically included: `statsd` and Yoctopuce python libraries. Update to the latest version:
 ```
-git clone https://github.com/yoctopuce/yoctolib_python.git yoctolib_python
+git submodule update --init --recursive
 ```
 
 ## Monitor
