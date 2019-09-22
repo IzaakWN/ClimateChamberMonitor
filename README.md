@@ -10,6 +10,10 @@ And set the correct IP address of LabEvent in `commands.py`, e.g.
 ```
 sed "s/ip='[^']*'/ip='130.60.164.144'/g" -i commands.py
 ```
+Install Yocto python libraries:
+```
+git clone https://github.com/yoctopuce/yoctolib_python.git yoctolib_python
+```
 
 ## Monitor
 Monitor the climate chamber in a GUI window and write to a log file `monitor.dat` (csv format) with
@@ -35,3 +39,4 @@ Run and monitor program specified by number via `-p` flag:
 ```
 python run_program.py -p 2
 ```
+
