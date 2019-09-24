@@ -52,6 +52,12 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       print "Monitoring climate chamber..."
       tval   = datetime.datetime.now()
       tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
+      if not ymeteo1:
+        temp_YM1 = -1
+        dewp_YM1 = -1
+      if not ymeteo2:
+        temp_YM2 = -1
+        dewp_YM2 = -1
       print "  %20s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       while not tstop or tstop>tval:
         tval    = datetime.datetime.now()
@@ -64,9 +70,6 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           if abs(dewp_YM1-temp)/tempnom<0.10:
             warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM1))
             forceWarmUp(client)
-        else:
-          temp_YM1 = -1
-          dewp_YM1 = -1
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
@@ -74,8 +77,8 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
             warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM2))
             forceWarmUp(client)
         else:
-          temp_YM2 = -1
-          dewp_YM2 = -1
+          temp_YM2 = -1.
+          dewp_YM2 = -1.
         air     = chamber.getAir()
         dry     = chamber.getDryer()
         run     = 0
@@ -230,7 +233,13 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       print "Monitoring climate chamber..."
       print "  %20s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       tval  = datetime.datetime.now()
-      tstop = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
+      tstop = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None
+      if not ymeteo1:
+        temp_YM1 = -1
+        dewp_YM1 = -1
+      if not ymeteo2:
+        temp_YM2 = -1
+        dewp_YM2 = -1
       while not tstop or tstop>tval:
         if not plt.fignum_exists(fig.number):
           print "Monitor was closed!"
@@ -252,9 +261,6 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           dewpline_YM1.set_ydata(dewpvals_YM1)
           templine_YM1.set_xdata(tvals)
           templine_YM1.set_ydata(tempvals_YM1)
-        else:
-          temp_YM1 = -1
-          dewp_YM1 = -1
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
@@ -267,9 +273,6 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           dewpline_YM2.set_ydata(dewpvals_YM2)
           templine_YM2.set_xdata(tvals)
           templine_YM2.set_ydata(tempvals_YM2)
-        else:
-          temp_YM2 = -1
-          dewp_YM2 = -1
         air     = chamber.getAir()
         dry     = chamber.getDryer()
         air     = chamber.getAir()
