@@ -75,7 +75,8 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
     
     # LOAD PREVIOUS DATA
     tformat    = '%d-%m-%Y %H:%M:%S'
-    tvals, tempvals, dewpvals, setpvals = [ ], [ ], [ ], [ ]
+    tvals, tempvals, setpvals = [ ], [ ], [ ]
+    tempvals_YM1, tempvals_YM2, dewpvals_YM1, dewpvals_YM2 = [ ], [ ], [ ], [ ]
     runvals, airvals, dryvals = [ ], [ ], [ ]
     if os.path.isfile(logname):
       print "Loading old monitoring data..."
@@ -89,7 +90,10 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
           tvals.append(tval)
           tempvals.append(temp)
           setpvals.append(setp)
-          dewpvals.append(dewp)
+          tempvals_YM1.append(dewp)
+          tempvals_YM2.append(dewp)
+          dewpvals_YM1.append(dewp)
+          dewpvals_YM2.append(dewp)
           airvals.append(air)
           dryvals.append(dry)
           runvals.append(run)
@@ -144,8 +148,8 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       axis2.grid(axis='y',which='major',linewidth=0.2)
       templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-      dewpline_YM1, = axis2.plot(tvals,dewpvals,color='blue',marker='^',label="Dewpoint 1",linewidth=1,markersize=5)
-      dewpline_YM2, = axis2.plot(tvals,dewpvals,color='purple',marker='^',label="Dewpoint 2",linewidth=1,markersize=5)
+      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint 1",linewidth=1,markersize=5)
+      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='^',label="Dewpoint 2",linewidth=1,markersize=5)
       axis2.legend(loc='upper left',framealpha=0,fontsize=14)
       
       # TEXT
@@ -221,7 +225,8 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         tvals.append(tval)
         tempvals.append(temp)
         setpvals.append(setp)
-        dewpvals.append(dewp)
+        dewpvals_YM1.append(dewp_YM1)
+        dewpvals_YM2.append(dewp_YM2)
         airvals.append(air)
         dryvals.append(dry)
         runvals.append(run)
@@ -235,9 +240,10 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         setpline.set_xdata(tvals)
         setpline.set_ydata(setpvals)
         dewpline.set_xdata(tvals)
-        dewpline.set_ydata(dewpvals)
-        dewpline.set_xdata(tvals)
-        dewpline.set_ydata(dewpvals)
+        dewpline_YM1.set_xdata(tvals)
+        dewpline_YM1.set_ydata(dewpvals_YM1)
+        dewpline_YM2.set_xdata(tvals)
+        dewpline_YM2.set_ydata(dewpvals_YM2)
         airline.set_xdata(tvals)
         airline.set_ydata(airvals)
         dryline.set_xdata(tvals)
