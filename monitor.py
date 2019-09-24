@@ -24,7 +24,7 @@ def importMatPlotLib():
   from matplotlib.widgets import Button
 
 
-def monitor(chamber,ymeteo1,ymeteo2,sensor,**kwargs):
+def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   """Start monitoring."""
   
   # SETTINGS
