@@ -11,17 +11,15 @@
 import os, sys, time, datetime
 import socket
 import csv
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.gridspec as gridspec
+from matplotlib.widgets import Button
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      forceWarmUp, stopClimateBox, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus
 from yocto_commands import connectYoctoMeteo
-
-def importMatPlotLib():
-  import matplotlib.pyplot as plt
-  import matplotlib.dates as mdates
-  import matplotlib.gridspec as gridspec
-  from matplotlib.widgets import Button
 
 
 def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
@@ -258,10 +256,6 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   
 
 def main(args):
-  
-  # OPTIONAL IMPORTS
-  if not args.batchmode:
-    importMatPlotLib()
   
   # PARAMETERS
   kwargs = {
