@@ -153,7 +153,7 @@ getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
 getDryer = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
 startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
 stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
-class ClimateChamber(_socketobject):
+class ClimateChamber(socket._socketobject):
   def getDewp(self):  return getDewp(self)
   def getTemp(self):  return getTemp(self)
   def getSetp(self):  return getSetp(self)
