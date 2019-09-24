@@ -24,7 +24,7 @@ from yocto_commands import connectYoctoMeteo
 
 
 
-def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
+def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
   """Start monitoring."""
   
   # SETTINGS
@@ -57,10 +57,18 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         tval     = datetime.datetime.now()
         temp     = chamber.getTemp()
         setp     = chamber.getSetp()
-        temp_YM1 = ymeteo1.getTemp()
-        temp_YM2 = ymeteo2.getTemp()
-        dewp_YM1 = ymeteo1.getDewp()
-        dewp_YM2 = ymeteo2.getDewp()
+        if ymeteo1:
+          temp_YM1 = ymeteo1.getTemp()
+          dewp_YM1 = ymeteo1.getDewp()
+        else:
+          temp_YM1 = -1
+          dewp_YM1 = -1
+        if ymeteo2:
+          temp_YM2 = ymeteo2.getTemp()
+          dewp_YM2 = ymeteo2.getDewp()
+        else:
+          temp_YM2 = -1
+          dewp_YM2 = -1
         air      = chamber.getAir()
         dry      = chamber.getDryer()
         run      = 0
@@ -220,30 +228,51 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         if not plt.fignum_exists(fig.number):
           print "Monitor was closed!"
           break
-        tval     = datetime.datetime.now()
-        temp     = chamber.getTemp()
-        setp     = chamber.getSetp()
-        temp_YM1 = ymeteo1.getTemp()
-        temp_YM2 = ymeteo2.getTemp()
-        dewp_YM1 = ymeteo1.getDewp()
-        dewp_YM2 = ymeteo2.getDewp()
-        air      = chamber.getAir()
-        dry      = chamber.getDryer()
-        air      = chamber.getAir()
-        dry      = chamber.getDryer()
-        run      = 0
+        tval    = datetime.datetime.now()
         tvals.append(tval)
+        temp    = chamber.getTemp()
+        setp    = chamber.getSetp()
+        tempnom = max(0.001,abs(temp))
+        if ymeteo1:
+          temp_YM1 = ymeteo1.getTemp()
+          dewp_YM1 = ymeteo1.getDewp()
+          if abs(dewp_YM1-temp)/tempnom<0.10:
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM1)
+            forceWarmUp(client)
+          dewpvals_YM2.append(dewp_YM1)
+          tempvals_YM2.append(temp_YM1)
+          dewpline_YM1.set_xdata(tvals)
+          dewpline_YM1.set_ydata(dewpvals_YM1)
+          templine_YM1.set_xdata(tvals)
+          templine_YM1.set_ydata(tempvals_YM1)
+        else:
+          temp_YM1 = -1
+          dewp_YM1 = -1
+        if ymeteo2:
+          temp_YM2 = ymeteo2.getTemp()
+          dewp_YM2 = ymeteo2.getDewp()
+          if abs(dewp_YM2-temp)/tempnom<0.10:
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM2)
+            forceWarmUp(client)
+          dewpvals_YM2.append(dewp_YM2)
+          tempvals_YM2.append(temp_YM2)
+          dewpline_YM2.set_xdata(tvals)
+          dewpline_YM2.set_ydata(dewpvals_YM2)
+          templine_YM2.set_xdata(tvals)
+          templine_YM2.set_ydata(tempvals_YM2)
+        else:
+          temp_YM2 = -1
+          dewp_YM2 = -1
+        air     = chamber.getAir()
+        dry     = chamber.getDryer()
+        air     = chamber.getAir()
+        dry     = chamber.getDryer()
+        run     = 0
         tempvals.append(temp)
         setpvals.append(setp)
-        dewpvals_YM1.append(dewp_YM1)
-        dewpvals_YM2.append(dewp_YM2)
         airvals.append(air)
         dryvals.append(dry)
         runvals.append(run)
-        tempnom = max(0.001,abs(temp))
-        if abs(dewp_YM1-temp)/tempnom<0.10 or abs(dewp_YM2-temp)/tempnom<0.10:
-          warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f, %.3f)!"%(temp,dewp_YM1,dewp_YM2)
-          forceWarmUp(client)
         updateStatus()
         checkWarnings()
         print "  %20s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
@@ -252,10 +281,6 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         templine.set_ydata(tempvals)
         setpline.set_xdata(tvals)
         setpline.set_ydata(setpvals)
-        dewpline_YM1.set_xdata(tvals)
-        dewpline_YM1.set_ydata(dewpvals_YM1)
-        dewpline_YM2.set_xdata(tvals)
-        dewpline_YM2.set_ydata(dewpvals_YM2)
         airline.set_xdata(tvals)
         airline.set_ydata(airvals)
         dryline.set_xdata(tvals)
