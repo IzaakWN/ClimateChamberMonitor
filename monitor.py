@@ -239,7 +239,6 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         templine.set_ydata(tempvals)
         setpline.set_xdata(tvals)
         setpline.set_ydata(setpvals)
-        dewpline.set_xdata(tvals)
         dewpline_YM1.set_xdata(tvals)
         dewpline_YM1.set_ydata(dewpvals_YM1)
         dewpline_YM2.set_xdata(tvals)
