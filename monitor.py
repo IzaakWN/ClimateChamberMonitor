@@ -18,10 +18,12 @@ from matplotlib.widgets import Button
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      forceWarmUp, stopClimateBox, checkActiveWarnings, openActiveWarnings,\
-                     getRunStatus, getTemp, getSetp, getDewp, getAir, getDryer
+                     getRunStatus
+from yocto_commands import connectYoctoMeteo
 
 
-def monitor(client,**kwargs):
+
+def monitor(chamber,ymeteo1,ymeteo2,sensor,**kwargs):
   """Start monitoring."""
   
   # SETTINGS
@@ -49,18 +51,22 @@ def monitor(client,**kwargs):
       print "Monitoring climate chamber..."
       tval   = datetime.datetime.now()
       tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
+      print "  %14s: %8s %8s %8s %8s %8s %8s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       while not tstop or tstop>tval:
-        tval = datetime.datetime.now()
-        temp = getTemp(client)
-        setp = getSetp(client)
-        dewp = 18.0
-        air  = getAir(client)
-        dry  = getDryer(client)
-        run  = 0
+        tval     = datetime.datetime.now()
+        temp     = chamber.getTemp()
+        setp     = chamber.getSetp()
+        temp_YM1 = ymeteo1.getTemp()
+        temp_YM2 = ymeteo2.getTemp()
+        dewp_YM1 = ymeteo1.getDewp()
+        dewp_YM2 = ymeteo2.getDewp()
+        air      = chamber.getAir()
+        dry      = chamber.getDryer()
+        run      = 0
         updateStatus()
         checkWarnings()
-        print "  %s: %8.5f %8.5f %8.5f"%(tval.strftime(tformat),temp,setp,dewp)
-        logger.writerow([tval.strftime(tformat),temp,setp,dewp,air,dry,run])
+        print "  %14s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         time.sleep(tstep)
       print "Monitoring finished!"
     
@@ -138,7 +144,8 @@ def monitor(client,**kwargs):
       axis2.grid(axis='y',which='major',linewidth=0.2)
       templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-      dewpline, = axis2.plot(tvals,dewpvals,color='blue',marker='^',label="Dummy dewpoint",linewidth=1,markersize=5)
+      dewpline_YM1, = axis2.plot(tvals,dewpvals,color='blue',marker='^',label="Dewpoint 1",linewidth=1,markersize=5)
+      dewpline_YM2, = axis2.plot(tvals,dewpvals,color='purple',marker='^',label="Dewpoint 2",linewidth=1,markersize=5)
       axis2.legend(loc='upper left',framealpha=0,fontsize=14)
       
       # TEXT
@@ -146,7 +153,7 @@ def monitor(client,**kwargs):
                             transform=axis2.transAxes,fontweight='bold')
       statuscolors = { 'Manual': 'saddlebrown', 'Program': 'navy', 'Not': 'darkgreen' }
       def updateStatus():
-        status = getRunStatus(client)
+        status = getRunStatus(chamber)
         statustext.set_text(status)
         for key in statuscolors:
           if key in status:
@@ -162,7 +169,7 @@ def monitor(client,**kwargs):
         setTimeAxisMinorLocators(axis2,swidth)
         fig.canvas.draw()
       def checkWarnings():
-        nwarn = checkActiveWarnings(client)
+        nwarn = checkActiveWarnings(chamber)
         if nwarn>0:
           messagebutton.active = True
           messageframe.set_visible(True)
@@ -178,34 +185,39 @@ def monitor(client,**kwargs):
       stopframe     = plt.axes([0.22,0.01,0.14,0.06])
       stopbutton    = Button(stopframe,'Stop Run',color='red')
       stopbutton.label.set_fontweight('bold')
-      stopbutton.on_clicked(lambda e: stopClimateBox(client))
+      stopbutton.on_clicked(lambda e: stopClimateBox(chamber))
       plt.setp(stopframe.spines.values(),linewidth=2,color='darkred')
       warmframe     = plt.axes([0.37,0.01,0.14,0.06])
       warmbutton    = Button(warmframe,'Force warm',color='red')
       warmbutton.label.set_fontweight('bold')
-      warmbutton.on_clicked(lambda e: forceWarmUp(client))
+      warmbutton.on_clicked(lambda e: forceWarmUp(chamber))
       plt.setp(warmframe.spines.values(),linewidth=2,color='darkred')
       messageframe  = plt.axes([0.52,0.01,0.15,0.06])
       messagebutton = Button(messageframe,'No warnings',color='orange')
-      messagebutton.on_clicked(lambda e: openActiveWarnings(client))
+      messagebutton.on_clicked(lambda e: openActiveWarnings(chamber))
       plt.setp(messageframe.spines.values(),linewidth=2,color='red')
       checkWarnings()
       
       # START MONITORING
       print "Monitoring climate chamber..."
+      print "  %14s: %8s %8s %8s %8s %8s %8s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       tval  = datetime.datetime.now()
       tstop = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
       while not tstop or tstop>tval:
         if not plt.fignum_exists(fig.number):
           print "Monitor was closed!"
           break
-        tval = datetime.datetime.now()
-        temp = getTemp(client)
-        setp = getSetp(client)
-        dewp = 18.0
-        air  = getAir(client)
-        dry  = getDryer(client)
-        run  = 0
+        temp     = chamber.getTemp()
+        setp     = chamber.getSetp()
+        temp_YM1 = ymeteo1.getTemp()
+        temp_YM2 = ymeteo2.getTemp()
+        dewp_YM1 = ymeteo1.getDewp()
+        dewp_YM2 = ymeteo2.getDewp()
+        air      = chamber.getAir()
+        dry      = chamber.getDryer()
+        air      = chamber.getAir()
+        dry      = chamber.getDryer()
+        run      = 0
         tvals.append(tval)
         tempvals.append(temp)
         setpvals.append(setp)
@@ -213,10 +225,11 @@ def monitor(client,**kwargs):
         airvals.append(air)
         dryvals.append(dry)
         runvals.append(run)
+        # TODO: interlock
         updateStatus()
         checkWarnings()
-        print "  %s: %8.5f %8.5f %8.5f"%(tval.strftime(tformat),temp,setp,dewp)
-        logger.writerow([tval.strftime(tformat),"%.5f"%temp,setp,dewp,air,dry,run])
+        print "  %14s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         templine.set_xdata(tvals)
         templine.set_ydata(tempvals)
         setpline.set_xdata(tvals)
@@ -257,14 +270,16 @@ def main(args):
   
   # CONNECT
   print "Connecting to climate chamber..."
-  client = connectClimateChamber()
+  chamber = connectClimateChamber()
+  ymeteo1 = connectYoctoMeteo('METEOMK1-28B37')
+  ymeteo2 = connectYoctoMeteo('METEOMK1-28AF9')
   
   # MONITOR
-  monitor(client,**kwargs)
+  monitor(chamber,ymeteo1,ymeteo2,**kwargs)
   
   # DISCONNECT
   print "Closing connection..."
-  client.close()
+  chamber.close()
   
 
 if __name__ == '__main__':

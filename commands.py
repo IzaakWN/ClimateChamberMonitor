@@ -145,6 +145,16 @@ cmd_dict['RESET'] = {
   'ERROR':           17012, # reset all errors
 }
 
+# SHORT HAND COMMANDS
+getDewp  = lambda c: 18.0
+getTemp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR VAL',[1])[0])
+getSetp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR SETPOINT',[1])[0])
+getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
+getDryer = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
+startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
+stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
+
+
 
 def executeSimServCmd(client, cmdstr, args=[ ], chamber=1, verbose=False):
   """Execute command from given string."""
@@ -197,6 +207,14 @@ def connectClimateChamber(ip='130.60.164.144',port=2049):
   """Connect to climate chamber via give IP address."""
   client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # create stream socket
   result = client.connect((ip,port)) # connect to protocol server
+  if client:
+    client.getDewp  = getDewp
+    client.getTemp  = getTemp
+    client.getSetp  = getSetp
+    client.getAir   = getAir
+    client.getDryer = getDryer
+    client.startRun = startRun
+    client.stopRun  = stopRun
   return client
   
 
@@ -282,12 +300,3 @@ def getRunStatus(client):
     prgmname = "Manual run"
   return prgmname
   
-
-# SHORT HAND COMMANDS
-getDewp  = lambda c: 18.0
-getTemp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR VAL',[1])[0])
-getSetp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR SETPOINT',[1])[0])
-getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
-getDryer = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
-startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
-stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
