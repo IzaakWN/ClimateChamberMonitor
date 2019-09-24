@@ -239,7 +239,7 @@ def forceWarmUp(client,target=24,gradient=1):
     print "Abort force warm-up!"
   
 
-def stopClimateBox(client):
+def stopClimateChamber(client):
   """Stop climate box."""
   pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
   if askyesno("Verify","Really stop %s?"%("manual run" if pgmstatus==0 else "program")):

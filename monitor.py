@@ -17,7 +17,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
-                     forceWarmUp, stopClimateBox, checkActiveWarnings, openActiveWarnings,\
+                     forceWarmUp, stopClimateChamber, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus
 from yocto_commands import connectYoctoMeteo
 
@@ -51,7 +51,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       print "Monitoring climate chamber..."
       tval   = datetime.datetime.now()
       tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
-      print "  %14s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
+      print "  %20s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       while not tstop or tstop>tval:
         tval     = datetime.datetime.now()
         temp     = chamber.getTemp()
@@ -65,7 +65,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         run      = 0
         updateStatus()
         checkWarnings()
-        print "  %14s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        print "  %20s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         time.sleep(tstep)
       print "Monitoring finished!"
@@ -79,7 +79,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
     tempvals_YM1, tempvals_YM2, dewpvals_YM1, dewpvals_YM2 = [ ], [ ], [ ], [ ]
     runvals, airvals, dryvals = [ ], [ ], [ ]
     if os.path.isfile(logname):
-      print "Loading old monitoring data..."
+      print "Loading old monitoring data from '%s'..."%(logname)
       with open(logname,'r') as logfile:
         logreader = csv.reader(logfile)
         tnow   = datetime.datetime.now()
@@ -152,10 +152,12 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       axis2.grid(axis='x',which='minor',linewidth=0.2)
       axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
       axis2.grid(axis='y',which='major',linewidth=0.2)
+      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
+      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
+      templine_YM1, = axis2.plot(tvals,dewpvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=5)
+      templine_YM2, = axis2.plot(tvals,dewpvals_YM2,'--',color='purple',marker='v',label="Temp. YM2",linewidth=0.5,markersize=5)
       templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint 1",linewidth=1,markersize=5)
-      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='^',label="Dewpoint 2",linewidth=1,markersize=5)
       axis2.legend(loc='upper left',framealpha=0,fontsize=14)
       
       # TEXT
@@ -195,7 +197,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       stopframe     = plt.axes([0.22,0.01,0.14,0.06])
       stopbutton    = Button(stopframe,'Stop Run',color='red')
       stopbutton.label.set_fontweight('bold')
-      stopbutton.on_clicked(lambda e: stopClimateBox(chamber))
+      stopbutton.on_clicked(lambda e: stopClimateChamber(chamber))
       plt.setp(stopframe.spines.values(),linewidth=2,color='darkred')
       warmframe     = plt.axes([0.37,0.01,0.14,0.06])
       warmbutton    = Button(warmframe,'Force warm',color='red')
@@ -210,7 +212,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       
       # START MONITORING
       print "Monitoring climate chamber..."
-      print "  %14s: %8s %8s %8s %8s %8s %8s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
+      print "  %20s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       tval  = datetime.datetime.now()
       tstop = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
       while not tstop or tstop>tval:
@@ -268,6 +270,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       #plt.waitforbuttonpress()
   
 
+
 def main(args):
   
   # CHECKS
@@ -297,6 +300,7 @@ def main(args):
   print "Closing connection..."
   chamber.close()
   
+
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
