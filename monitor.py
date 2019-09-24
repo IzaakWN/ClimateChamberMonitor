@@ -18,7 +18,7 @@ from matplotlib.widgets import Button
 from utils import warning
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
-                     forceWarmUpEvent, stopClimateChamberEvent, checkActiveWarnings, openActiveWarnings,\
+                     forceWarmUp, forceWarmUpEvent, stopClimateChamberEvent, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus
 from yocto_commands import connectYoctoMeteo
 
