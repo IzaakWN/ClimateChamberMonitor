@@ -33,8 +33,8 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   nsamples  = kwargs.get('nsamples',      -1    )
   tstep     = kwargs.get('tstep',          4    )
   twidth    = kwargs.get('twidth',      1000    )
-  ymin      = kwargs.get('ymin',           8    )
-  ymax      = kwargs.get('ymax',          40    )
+  ymin      = kwargs.get('ymin',           8.   )
+  ymax      = kwargs.get('ymax',          40.   )
   dtback    = datetime.timedelta(days=2) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.15*twidth)
@@ -87,6 +87,9 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         for stamp, temp, setp, temp_YM1, temp_YM2, dewp_YM1, dewp_YM2, air, dry, run in logreader:
           tval = datetime.datetime.strptime(stamp,tformat)
           if tval<tback: continue
+          temp, setp = float(temp), float(setp)
+          temp_YM1, temp_YM2, dewp_YM1, dewp_YM2 = float(temp_YM1), float(temp_YM2), float(dewp_YM1), float(dewp_YM2)
+          air, dry, run = int(air), int(dry), int(run)
           tvals.append(tval)
           tempvals.append(temp)
           setpvals.append(setp)
