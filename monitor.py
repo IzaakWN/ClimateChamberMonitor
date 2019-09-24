@@ -133,7 +133,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       axis1.grid(axis='y',which='major',linewidth=0.2)
       airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
       dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=1,markersize=4)
-      axis1.legend(loc='center left',framealpha=0,fontsize=14)
+      axis1.legend(loc='center left',framealpha=0,fontsize=13)
       
       # TEMPERATURE SUBPLOT
       axis2 = plt.subplot(grid[1],sharex=axis1)
@@ -152,13 +152,13 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       axis2.grid(axis='x',which='minor',linewidth=0.2)
       axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
       axis2.grid(axis='y',which='major',linewidth=0.2)
-      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
-      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
-      templine_YM1, = axis2.plot(tvals,dewpvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=5)
-      templine_YM2, = axis2.plot(tvals,dewpvals_YM2,'--',color='purple',marker='v',label="Temp. YM2",linewidth=0.5,markersize=5)
       templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-      axis2.legend(loc='upper left',framealpha=0,fontsize=14)
+      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
+      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
+      templine_YM1, = axis2.plot(tvals,dewpvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=3)
+      templine_YM2, = axis2.plot(tvals,dewpvals_YM2,'--',color='purple',marker='v',label="Temp. YM2",linewidth=0.5,markersize=3)
+      axis2.legend(loc='upper left',framealpha=0,fontsize=13)
       
       # TEXT
       statustext = plt.text(0.98,0.98,"UNSET",horizontalalignment='right',verticalalignment='top',
@@ -242,7 +242,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         # TODO: interlock
         updateStatus()
         checkWarnings()
-        print "  %14s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        print "  %20s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         templine.set_xdata(tvals)
         templine.set_ydata(tempvals)
