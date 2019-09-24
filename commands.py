@@ -153,14 +153,15 @@ getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
 getDryer = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
 startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
 stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
-class ClimateChamber(socket._socketobject):
-  def getDewp(self):  return getDewp(self)
-  def getTemp(self):  return getTemp(self)
-  def getSetp(self):  return getSetp(self)
-  def getAir(self):   return getAir(self)
-  def getDryer(self): return getDryer(self)
-  def startRun(self): return startRun(self)
-  def stopRun(self):  return stopRun(self)
+class ClimateChamber(socket.socket):
+  __slots__ = ()
+  def getDewp(self):    return getDewp(self)
+  def getTemp(self):    return getTemp(self)
+  def getSetp(self):    return getSetp(self)
+  def getAir(self):     return getAir(self)
+  def getDryer(self):   return getDryer(self)
+  def startRun(self):   return startRun(self)
+  def stopRun(self):    return stopRun(self)
 
 
 def executeSimServCmd(client, cmdstr, args=[ ], chamber=1, verbose=False):
@@ -214,7 +215,7 @@ def connectClimateChamber(ip='130.60.164.144',port=2049):
   """Connect to climate chamber via give IP address."""
   client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # create stream socket
   result = client.connect((ip,port)) # connect to protocol server
-  client.__class_ = ClimateChamber
+  client.__class__ = ClimateChamber
   return client
   
 
