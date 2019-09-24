@@ -172,8 +172,8 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
       dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
       dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='purple',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
-      templine_YM1, = axis2.plot(tvals,dewpvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=3)
-      templine_YM2, = axis2.plot(tvals,dewpvals_YM2,'--',color='purple',marker='v',label="Temp. YM2",linewidth=0.5,markersize=3)
+      templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=3)
+      templine_YM2, = axis2.plot(tvals,tempvals_YM2,'--',color='purple',marker='v',label="Temp. YM2",linewidth=0.5,markersize=3)
       axis2.legend(loc='upper left',framealpha=0,fontsize=13)
       
       # TEXT
