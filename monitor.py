@@ -15,9 +15,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
+from utils import warning
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
-                     forceWarmUp, stopClimateChamber, checkActiveWarnings, openActiveWarnings,\
+                     forceWarmUpEvent, stopClimateChamberEvent, checkActiveWarnings, openActiveWarnings,\
                      getRunStatus
 from yocto_commands import connectYoctoMeteo
 
@@ -197,12 +198,12 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       stopframe     = plt.axes([0.22,0.01,0.14,0.06])
       stopbutton    = Button(stopframe,'Stop Run',color='red')
       stopbutton.label.set_fontweight('bold')
-      stopbutton.on_clicked(lambda e: stopClimateChamber(chamber))
+      stopbutton.on_clicked(lambda e: stopClimateChamberEvent(chamber))
       plt.setp(stopframe.spines.values(),linewidth=2,color='darkred')
       warmframe     = plt.axes([0.37,0.01,0.14,0.06])
       warmbutton    = Button(warmframe,'Force warm',color='red')
       warmbutton.label.set_fontweight('bold')
-      warmbutton.on_clicked(lambda e: forceWarmUp(chamber))
+      warmbutton.on_clicked(lambda e: forceWarmUpEvent(chamber))
       plt.setp(warmframe.spines.values(),linewidth=2,color='darkred')
       messageframe  = plt.axes([0.52,0.01,0.15,0.06])
       messagebutton = Button(messageframe,'No warnings',color='orange')
@@ -239,10 +240,13 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         airvals.append(air)
         dryvals.append(dry)
         runvals.append(run)
-        # TODO: interlock
+        tempnom = max(0.001,abs(temp))
+        if abs(dewp_YM1-temp)/tempnom<0.10 or abs(dewp_YM2-temp)/tempnom<0.10:
+          warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f, %.3f)!"%(temp,dewp_YM1,dewp_YM2)
+          forceWarmUp(client)
         updateStatus()
         checkWarnings()
-        print "  %20s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        print "  %20s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         templine.set_xdata(tvals)
         templine.set_ydata(tempvals)
@@ -312,7 +316,7 @@ if __name__ == '__main__':
                                            help="number of data readings; -1 for indefinite monitoring (until monitor window closes or monitoring is interrupted)" )
   parser.add_argument('-s', '--stepsize',  dest='stepsize', type=int, default=10, action='store',
                                            help="sampling frequency of data reading in seconds" )
-  parser.add_argument('-w', '--width',     dest='twidth', type=float, default=1000, action='store',
+  parser.add_argument('-w', '--width',     dest='twidth', type=float, default=1200, action='store',
                                            help="width of time axis in seconds" )
   parser.add_argument('-o', '--output',    dest='output', type=str, default="monitor.dat", action='store',
                                            help="output log file with monitoring data (csv format)" )
@@ -323,3 +327,4 @@ if __name__ == '__main__':
   args = parser.parse_args()
   main(args)
   
+

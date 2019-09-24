@@ -221,20 +221,25 @@ def connectClimateChamber(ip='130.60.164.144',port=2049):
 
 def forceWarmUp(client,target=24,gradient=1):
   """Force warm up."""
+  if int(executeSimServCmd(client,'GET PRGM STATUS')[0])!=0:
+    executeSimServCmd(client,'STOP PRGM')
+  assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
+  warning("Force warm up to target temperature %.1f degrees C with a gradient of %.1f K/min..."%(target,gradient))
+  executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
+  executeSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
+  executeSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
+  print "Turning on compressed air and dryer..."
+  executeSimServCmd(client,'SET DIGI_OUT VAL',[7,1]) # AIR1  ON
+  executeSimServCmd(client,'SET DIGI_OUT VAL',[8,1]) # DRYER ON
+  print "Starting forced warm-up..."
+  executeSimServCmd(client,'START MANUAL',[1,1])
+  warning("Please turn the climate box off yourself!")
+  
+
+def forceWarmUpEvent(client,**kwargs):
+  """Force warm up."""
   if askyesno("Verify","Really force warm-up?"):
-    if int(executeSimServCmd(client,'GET PRGM STATUS')[0])!=0:
-      executeSimServCmd(client,'STOP PRGM')
-    assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
-    warning("Force warm up to target temperature %.1f degrees C with a gradient of %.1f K/min..."%(target,gradient))
-    executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
-    executeSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
-    executeSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
-    print "Turning on compressed air and dryer..."
-    executeSimServCmd(client,'SET DIGI_OUT VAL',[7,1]) # AIR1  ON
-    executeSimServCmd(client,'SET DIGI_OUT VAL',[8,1]) # DRYER ON
-    print "Starting forced warm-up..."
-    executeSimServCmd(client,'START MANUAL',[1,1])
-    warning("Please turn the climate box off yourself!")
+    forceWarmUp(client,**kwargs)
   else:
     print "Abort force warm-up!"
   
@@ -242,13 +247,19 @@ def forceWarmUp(client,target=24,gradient=1):
 def stopClimateChamber(client):
   """Stop climate box."""
   pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
+  temp = getTemp(client)
+  warning("Stop running at temperature %.1f degrees C; no warm-up!"%(temp))
+  if pgmstatus!=0:
+    executeSimServCmd(client,'STOP PRGM')
+  else:
+    executeSimServCmd(client,'START MANUAL',[1,0])
+  
+
+def stopClimateChamberEvent(client):
+  """Stop climate box."""
+  pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
   if askyesno("Verify","Really stop %s?"%("manual run" if pgmstatus==0 else "program")):
-    temp = getTemp(client)
-    warning("Stop running at temperature %.1f degrees C; no warm-up!"%(temp))
-    if pgmstatus!=0:
-      executeSimServCmd(client,'STOP PRGM')
-    else:
-      executeSimServCmd(client,'START MANUAL',[1,0])
+    stopClimateChamber(client)
   else:
     print "Abort interuption!"
   
