@@ -54,24 +54,31 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
       print "  %20s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       while not tstop or tstop>tval:
-        tval     = datetime.datetime.now()
-        temp     = chamber.getTemp()
-        setp     = chamber.getSetp()
+        tval    = datetime.datetime.now()
+        temp    = chamber.getTemp()
+        setp    = chamber.getSetp()
+        tempnom = max(0.001,abs(temp))
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
+          if abs(dewp_YM1-temp)/tempnom<0.10:
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM1))
+            forceWarmUp(client)
         else:
           temp_YM1 = -1
           dewp_YM1 = -1
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
+          if abs(dewp_YM2-temp)/tempnom<0.10:
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM2))
+            forceWarmUp(client)
         else:
           temp_YM2 = -1
           dewp_YM2 = -1
-        air      = chamber.getAir()
-        dry      = chamber.getDryer()
-        run      = 0
+        air     = chamber.getAir()
+        dry     = chamber.getDryer()
+        run     = 0
         updateStatus()
         checkWarnings()
         print "  %20s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
@@ -237,7 +244,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
           if abs(dewp_YM1-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM1)
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM1))
             forceWarmUp(client)
           dewpvals_YM2.append(dewp_YM1)
           tempvals_YM2.append(temp_YM1)
@@ -252,7 +259,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
           if abs(dewp_YM2-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM2)
+            warning("INTERLOCK! Temperature (%.3f) within 10% of dewpoint (%.3f)!"%(temp,dewp_YM2))
             forceWarmUp(client)
           dewpvals_YM2.append(dewp_YM2)
           tempvals_YM2.append(temp_YM2)
