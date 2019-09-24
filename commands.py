@@ -208,13 +208,13 @@ def connectClimateChamber(ip='130.60.164.144',port=2049):
   client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # create stream socket
   result = client.connect((ip,port)) # connect to protocol server
   if client:
-    client.getDewp  = getDewp
-    client.getTemp  = getTemp
-    client.getSetp  = getSetp
-    client.getAir   = getAir
-    client.getDryer = getDryer
-    client.startRun = startRun
-    client.stopRun  = stopRun
+    setattr(client,'getDewp',  getDewp)
+    setattr(client,'getTemp',  getTemp)
+    setattr(client,'getSetp',  getSetp)
+    setattr(client,'getAir',   getAir)
+    setattr(client,'getDryer', getDryer)
+    setattr(client,'startRun', startRun)
+    setattr(client,'stopRun',  stopRun)
   return client
   
 
