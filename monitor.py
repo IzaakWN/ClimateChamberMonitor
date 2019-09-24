@@ -22,6 +22,7 @@ from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
 from yocto_commands import connectYoctoMeteo
 
 
+
 def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   """Start monitoring."""
   
@@ -50,7 +51,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
       print "Monitoring climate chamber..."
       tval   = datetime.datetime.now()
       tstop  = tval + datetime.timedelta(seconds=dtime) if dtime>0 else None 
-      print "  %14s: %8s %8s %8s %8s %8s %8s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
+      print "  %14s: %10s %10s %10s %10s %10s %10s"%("timestamp","temp","setp","temp YM1","temp YM2","dewp YM1","dewp YM2")
       while not tstop or tstop>tval:
         tval     = datetime.datetime.now()
         temp     = chamber.getTemp()
@@ -64,7 +65,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         run      = 0
         updateStatus()
         checkWarnings()
-        print "  %14s: %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
+        print "  %14s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         time.sleep(tstep)
       print "Monitoring finished!"
@@ -256,6 +257,10 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   
 
 def main(args):
+  
+  # CHECKS
+  if not args.batchmode and 'DISPLAY' not in os.environ:
+    print "Warning! Cannot open plot (no 'DISPLAY' environmental variable found). Running in batch mode..."
   
   # PARAMETERS
   kwargs = {

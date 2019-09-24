@@ -20,7 +20,13 @@ getYMTemp = lambda m: m.temp.get_currentValue()
 getYMPres = lambda m: m.pres.get_currentValue()
 getYMHumi = lambda m: m.humi.get_currentValue()
 getYMDewp = lambda m: computeDewPoint(m.temp.get_currentValue(),m.humi.get_currentValue())
-
+class YoctoMeteo(YModule):
+  def getTemp(self):    return getYMTemp(self)
+  def getHumi(self):    return getYMHumi(self)
+  def getDewp(self):    return getYMDewp(self)
+  def getPres(self):    return getYMPres(self)
+  def close(self):      return disconnectYoctoMeteo(self)
+  def disconnect(self): return disconnectYoctoMeteo(self)
 
 
 def connectRaspberryPi(ip):
@@ -61,11 +67,7 @@ def connectYoctoMeteo(target='any'):
   module.humi  = YHumidity.FindHumidity(target+'.humidity')
   module.pres  = YPressure.FindPressure(target+'.pressure')
   module.temp  = YTemperature.FindTemperature(target+'.temperature')
-  module.getTemp = getYMTemp
-  module.getPres = getYMPres
-  module.getHumi = getYMHumi
-  module.getDewp = getYMDewp
-  module.close = lambda s: disconnectYoctoMeteo(s)
+  module.__class__ = YoctoMeteo
   
   return module
   

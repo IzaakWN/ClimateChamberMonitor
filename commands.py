@@ -155,13 +155,13 @@ startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
 stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
 class ClimateChamber(socket.socket):
   __slots__ = ()
-  def getDewp(self):    return getDewp(self)
   def getTemp(self):    return getTemp(self)
   def getSetp(self):    return getSetp(self)
   def getAir(self):     return getAir(self)
   def getDryer(self):   return getDryer(self)
   def startRun(self):   return startRun(self)
   def stopRun(self):    return stopRun(self)
+  def disconnect(self): return self.close()
 
 
 def executeSimServCmd(client, cmdstr, args=[ ], chamber=1, verbose=False):
