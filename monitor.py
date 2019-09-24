@@ -33,7 +33,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
   nsamples  = kwargs.get('nsamples',      -1    )
   tstep     = kwargs.get('tstep',          4    )
   twidth    = kwargs.get('twidth',      1000    )
-  ymin      = kwargs.get('ymin',          10    )
+  ymin      = kwargs.get('ymin',           8    )
   ymax      = kwargs.get('ymax',          40    )
   dtback    = datetime.timedelta(days=2) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
@@ -69,7 +69,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         time.sleep(tstep)
       print "Monitoring finished!"
-    
+  
   # GUI WINDOW
   else:
     
@@ -84,19 +84,22 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         logreader = csv.reader(logfile)
         tnow   = datetime.datetime.now()
         tback  = tnow - dtback
-        for stamp, temp, setp, dewp, air, dry, run in logreader:
+        for stamp, temp, setp, temp_YM1, temp_YM2, dewp_YM1, dewp_YM2, air, dry, run in logreader:
           tval = datetime.datetime.strptime(stamp,tformat)
           if tval<tback: continue
           tvals.append(tval)
           tempvals.append(temp)
           setpvals.append(setp)
-          tempvals_YM1.append(dewp)
-          tempvals_YM2.append(dewp)
-          dewpvals_YM1.append(dewp)
-          dewpvals_YM2.append(dewp)
+          tempvals_YM1.append(temp_YM1)
+          tempvals_YM2.append(temp_YM2)
+          dewpvals_YM1.append(dewp_YM1)
+          dewpvals_YM2.append(dewp_YM2)
           airvals.append(air)
           dryvals.append(dry)
           runvals.append(run)
+          for yval in [temp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2]:
+            if   yval<ymin: ymin = yval
+            elif yval>ymax: ymax = yval
     
     # MONITOR DATA
     with open(logname,'a+') as logfile:
@@ -211,6 +214,7 @@ def monitor(chamber,ymeteo1,ymeteo2,**kwargs):
         if not plt.fignum_exists(fig.number):
           print "Monitor was closed!"
           break
+        tval     = datetime.datetime.now()
         temp     = chamber.getTemp()
         setp     = chamber.getSetp()
         temp_YM1 = ymeteo1.getTemp()
