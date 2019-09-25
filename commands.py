@@ -9,6 +9,9 @@ if 'DISPLAY' in os.environ:
   from tkMessageBox import askyesno, showinfo
   root = Tkinter.Tk(); root.withdraw() # import before matplotlib
 
+# CLIMATE CHAMBER IP
+defaultip = '130.60.164.198' #'169.254.219.152'
+
 # SIMSERV COMMAND
 # CMD + SR + CBR + CR
 # CMD + SR + CBR + SR + ARG + CR
@@ -147,12 +150,14 @@ cmd_dict['RESET'] = {
 
 # SHORT HAND COMMANDS
 getDewp  = lambda c: 18.0
-getTemp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR VAL',[1])[0])
-getSetp  = lambda c: float(executeSimServCmd(c,'GET CTRL_VAR SETPOINT',[1])[0])
-getAir   = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
-getDryer = lambda c: int(executeSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
-startRun = lambda c: executeSimServCmd(client,'START MANUAL',[1,1])
-stopRun  = lambda c: executeSimServCmd(client,'START MANUAL',[1,0])
+getTemp  = lambda c: float(sendSimServCmd(c,'GET CTRL_VAR VAL',[1])[0])
+getSetp  = lambda c: float(sendSimServCmd(c,'GET CTRL_VAR SETPOINT',[1])[0])
+getAir   = lambda c: int(sendSimServCmd(c,'GET DIGI_OUT VAL',[7])[0])
+getDryer = lambda c: int(sendSimServCmd(c,'GET DIGI_OUT VAL',[8])[0])
+startRun = lambda c: sendSimServCmd(client,'START MANUAL',[1,1])
+stopRun  = lambda c: sendSimServCmd(client,'START MANUAL',[1,0])
+
+# CLIMATE CHAMBER CLASS
 class ClimateChamber(socket.socket):
   __slots__ = ()
   def getTemp(self):    return getTemp(self)
@@ -162,9 +167,15 @@ class ClimateChamber(socket.socket):
   def startRun(self):   return startRun(self)
   def stopRun(self):    return stopRun(self)
   def disconnect(self): return self.close()
+  def sendSimServCmd(self,*args,**kwargs):
+    return sendSimServCmd(self,*args,**kwargs)
+  def forceWarmUp(self,*args,**kwargs):
+    return forceWarmUp(self,*args,**kwargs)
+  def stop(self,*args,**kwargs):
+    return stopClimateChamber(self,*args,**kwargs)
+  
 
-
-def executeSimServCmd(client, cmdstr, args=[ ], chamber=1, verbose=False):
+def sendSimServCmd(client, cmdstr, args=[ ], chamber=1, verbose=False):
   """Execute command from given string."""
   command = createSimServCmdFromString(cmdstr,args,chamber=chamber,verbose=verbose)
   client.send(command)
@@ -211,7 +222,7 @@ def unpackSimServData(data):
   return output
   
 
-def connectClimateChamber(ip='130.60.164.144',port=2049):
+def connectClimateChamber(ip=defaultip,port=2049):
   """Connect to climate chamber via give IP address."""
   client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # create stream socket
   result = client.connect((ip,port)) # connect to protocol server
@@ -221,18 +232,18 @@ def connectClimateChamber(ip='130.60.164.144',port=2049):
 
 def forceWarmUp(client,target=24,gradient=1):
   """Force warm up."""
-  if int(executeSimServCmd(client,'GET PRGM STATUS')[0])!=0:
-    executeSimServCmd(client,'STOP PRGM')
+  if int(sendSimServCmd(client,'GET PRGM STATUS')[0])!=0:
+    sendSimServCmd(client,'STOP PRGM')
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
   warning(u"Force warm up to target temperature %.1f\u00b0C with a gradient of %.1f K/min..."%(target,gradient))
-  executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
-  executeSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
-  executeSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
+  sendSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
+  sendSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
+  sendSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
   print "Turning on compressed air and dryer..."
-  executeSimServCmd(client,'SET DIGI_OUT VAL',[7,1]) # AIR1  ON
-  executeSimServCmd(client,'SET DIGI_OUT VAL',[8,1]) # DRYER ON
+  sendSimServCmd(client,'SET DIGI_OUT VAL',[7,1]) # AIR1  ON
+  sendSimServCmd(client,'SET DIGI_OUT VAL',[8,1]) # DRYER ON
   print "Starting forced warm-up..."
-  executeSimServCmd(client,'START MANUAL',[1,1])
+  sendSimServCmd(client,'START MANUAL',[1,1])
   warning("Please turn the climate box off yourself!")
   
 
@@ -246,18 +257,18 @@ def forceWarmUpEvent(client,**kwargs):
 
 def stopClimateChamber(client):
   """Stop climate box."""
-  pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
+  pgmstatus = int(sendSimServCmd(client,'GET PRGM STATUS')[0])
   temp = getTemp(client)
   warning(u"Stop running at temperature %.1f\u00b0C; no warm-up!"%(temp))
   if pgmstatus!=0:
-    executeSimServCmd(client,'STOP PRGM')
+    sendSimServCmd(client,'STOP PRGM')
   else:
-    executeSimServCmd(client,'START MANUAL',[1,0])
+    sendSimServCmd(client,'START MANUAL',[1,0])
   
 
 def stopClimateChamberEvent(client):
   """Stop climate box."""
-  pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
+  pgmstatus = int(sendSimServCmd(client,'GET PRGM STATUS')[0])
   if askyesno("Verify","Really stop %s?"%("manual run" if pgmstatus==0 else "program")):
     stopClimateChamber(client)
   else:
@@ -265,12 +276,12 @@ def stopClimateChamberEvent(client):
   
 
 def checkActiveWarnings(client,**kwargs):
-  nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
+  nmsg = int(sendSimServCmd(client,'GET MSG NUM')[0])
   nactive = 0
   if nmsg>0:
     for i in xrange(1,nmsg+1):
-      status = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
-      mtype  = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
+      status = int(sendSimServCmd(client,'GET MSG STATUS',[i])[0])
+      mtype  = int(sendSimServCmd(client,'GET MSG TYPE',[i])[0])
       if status==1 and mtype & kwargs.get('type',3): # alarm or warning
         nactive += 1
   return nactive
@@ -283,16 +294,15 @@ def checkInterlock(client,temp,dewp):
     #forceWarmUp(client)
   
 
-
 def getActiveWarnings(client,**kwargs):
   """Get active messages; by default alarms and warnings only."""
-  nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
+  nmsg = int(sendSimServCmd(client,'GET MSG NUM')[0])
   messages = [ ]
   for i in xrange(1,nmsg+1):
-    status  = int(executeSimServCmd(client,'GET MSG STATUS',[i])[0])
-    mtype   = int(executeSimServCmd(client,'GET MSG TYPE',[i])[0])
+    status  = int(sendSimServCmd(client,'GET MSG STATUS',[i])[0])
+    mtype   = int(sendSimServCmd(client,'GET MSG TYPE',[i])[0])
     if status==1 and mtype & kwargs.get('type',3): # alarm or warning
-      message = str(executeSimServCmd(client,'GET MSG TEXT',[i])[0])
+      message = str(sendSimServCmd(client,'GET MSG TEXT',[i])[0])
       mtext = "ALARM!" if mtype & 1 else "Warning!" if mtype & 2 else "Info:"
       messages.append("%s %s"%(mtext,message))
   return messages
@@ -301,7 +311,7 @@ def getActiveWarnings(client,**kwargs):
 def openActiveWarnings(client,**kwargs):
   """Open active messages; by default alarms and warnings only."""
   print "MESSAGES NOT TESTED!"
-  nmsg = int(executeSimServCmd(client,'GET MSG NUM')[0])
+  nmsg = int(sendSimServCmd(client,'GET MSG NUM')[0])
   messages = getActiveWarnings(client,**kwargs)
   if messages:
     allmessages = "Found the following active alarms/warnings:"+"\n  ".join(messages)
@@ -311,12 +321,12 @@ def openActiveWarnings(client,**kwargs):
 
 def getRunStatus(client):
   """Get the name of the running program."""
-  prgmid   = int(executeSimServCmd(client,'GET PRGM NUM')[0])
+  prgmid   = int(sendSimServCmd(client,'GET PRGM NUM')[0])
   prgmname = "Not running"
   if prgmid>0:
     # TODO: check program status
-    prgmname = "Program '%s'"%(str(executeSimServCmd(client,'GET PRGM NAME',[prgmid])[0]))
-  elif int(executeSimServCmd(client,'GET CHAMBER STATUS')[0])>1:
+    prgmname = "Program '%s'"%(str(sendSimServCmd(client,'GET PRGM NAME',[prgmid])[0]))
+  elif int(sendSimServCmd(client,'GET CHAMBER STATUS')[0])>1:
     prgmname = "Manual run"
   return prgmname
   

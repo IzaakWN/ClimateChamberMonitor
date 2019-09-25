@@ -17,10 +17,11 @@ import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
 from utils import warning, checkGUIMode
 from plotter import setTimeAxisMinorLocators
-from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
+from commands import connectClimateChamber, sendSimServCmd, unpackSimServData,\
                      checkActiveWarnings, openActiveWarnings, getRunStatus,\
                      checkInterlock, forceWarmUp, forceWarmUpEvent, stopClimateChamberEvent
-from yocto_commands import connectYoctoMeteo
+import yocto_commands as YOCTO
+from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 
 
 
@@ -167,12 +168,12 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       axis2.grid(axis='x',which='minor',linewidth=0.2)
       axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
       axis2.grid(axis='y',which='major',linewidth=0.2)
-      setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-      templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',marker='^',label="Temp. YM1",linewidth=0.5,markersize=2)
-      templine_YM2, = axis2.plot(tvals,tempvals_YM2,'--',color='limegreen',marker='v',label="Temp. YM2",linewidth=0.5,markersize=1)
-      templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
-      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=6)
-      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='limegreen',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
+      setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=4)
+      templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',label="Temp. YM1",linewidth=0.5) #,marker='^',markersize=1
+      templine_YM2, = axis2.plot(tvals,tempvals_YM2,'--',color='limegreen',label="Temp. YM2",linewidth=0.5) #,marker='v',markersize=1
+      templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=4)
+      dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
+      dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='limegreen',marker='v',label="Dewpoint YM2",linewidth=1,markersize=4)
       legorder = [templine,setpline,templine_YM1,templine_YM2,dewpline_YM1,dewpline_YM2]
       axis2.legend(legorder,[l.get_label() for l in legorder],loc='upper left',framealpha=0,fontsize=13)
       
@@ -322,15 +323,16 @@ def main(args):
   # CONNECT
   print "Connecting to climate chamber..."
   chamber = connectClimateChamber()
-  ymeteo1 = connectYoctoMeteo('METEOMK1-28B37')
-  ymeteo2 = connectYoctoMeteo('METEOMK1-28AF9')
+  ymeteo1 = connectYoctoMeteo(YOCTO.ymeteo1)
+  ymeteo2 = connectYoctoMeteo(YOCTO.ymeteo2)
   
   # MONITOR
   monitor(chamber,ymeteo1,ymeteo2,**kwargs)
   
   # DISCONNECT
   print "Closing connection..."
-  chamber.close()
+  chamber.disconnect()
+  disconnectYoctoMeteo()
   
 
 

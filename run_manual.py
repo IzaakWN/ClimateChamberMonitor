@@ -9,7 +9,9 @@ import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import numpy as np
 from monitor import monitor
-from commands import connectClimateChamber, executeSimServCmd, unpackSimServData
+from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
+import yocto_commands as YOCTO
+from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 from argparse import ArgumentParser
 description = '''Manually run climate chamber.'''
 parser = ArgumentParser(prog="run_manual",description=description,epilog="Good luck!")
@@ -40,19 +42,19 @@ def startManualRun(client,target=20.0,gradient=2):
   """Start manual run."""
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
   print "Setting up manual run with target temperature = %.1f and gradient %.1f K/min..."%(target,gradient)
-  executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
-  executeSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
-  executeSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
-  executeSimServCmd(client,'SET DIGI_OUT VAL', [7,1]) # AIR1  ON
-  executeSimServCmd(client,'SET DIGI_OUT VAL',[8,0])  # DRYER OFF
+  sendSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
+  sendSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
+  sendSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
+  sendSimServCmd(client,'SET DIGI_OUT VAL', [7,1]) # AIR1  ON
+  sendSimServCmd(client,'SET DIGI_OUT VAL',[8,0])  # DRYER OFF
   print "Starting manual run..."
-  executeSimServCmd(client,'START MANUAL',[1,1])
+  sendSimServCmd(client,'START MANUAL',[1,1])
   
 
 def stopManualRun(client):
   """Stop manual run."""
   print "Stopping manual run..."
-  executeSimServCmd(client,'START MANUAL',[1,0])
+  sendSimServCmd(client,'START MANUAL',[1,0])
   
 
 def main(args):
@@ -74,7 +76,8 @@ def main(args):
   
   # DISCONNECT
   print "Closing connection..."
-  client.close()
+  chamber.disconnect()
+  disconnectYoctoMeteo()
   
 
 if __name__ == '__main__':

@@ -13,6 +13,8 @@ import csv
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
+import yocto_commands as YOCTO
+from yocto_commands import connectYoctoMeteo
 import numpy as np
 
 
@@ -55,26 +57,36 @@ def monitor(**kwargs):
   # LOAD PREVIOUS DATA
   tformat   = '%d-%m-%Y %H:%M:%S'
   tlast     = None
-  tvals, tempvals, dewpvals, setpvals = [ ], [ ], [ ], [ ]
+  tvals, tempvals, setpvals = [ ], [ ], [ ]
+  tempvals_YM1, tempvals_YM2, dewpvals_YM1, dewpvals_YM2 = [ ], [ ], [ ], [ ]
   runvals, airvals, dryvals = [ ], [ ], [ ]
   if os.path.isfile(logname):
-    print "Loading old monitoring data..."
+    print "Loading old monitoring data from '%s'..."%(logname)
     with open(logname,'r') as logfile:
       logreader = csv.reader(logfile)
       tnow   = datetime.datetime.now()
       tback  = tnow - dtback
-      for stamp, temp, setp, dewp, air, dry, run in logreader:
+      for stamp, temp, setp, temp_YM1, temp_YM2, dewp_YM1, dewp_YM2, air, dry, run in logreader:
         tval = datetime.datetime.strptime(stamp,tformat)
         if tval<tback: continue
+        temp, setp = float(temp), float(setp)
+        temp_YM1, temp_YM2, dewp_YM1, dewp_YM2 = float(temp_YM1), float(temp_YM2), float(dewp_YM1), float(dewp_YM2)
+        air, dry, run = int(air), int(dry), int(run)
         tvals.append(tval)
         tempvals.append(temp)
         setpvals.append(setp)
-        dewpvals.append(dewp)
+        tempvals_YM1.append(temp_YM1)
+        tempvals_YM2.append(temp_YM2)
+        dewpvals_YM1.append(dewp_YM1)
+        dewpvals_YM2.append(dewp_YM2)
         airvals.append(air)
         dryvals.append(dry)
         runvals.append(run)
         if not tlast or tlast<tval:
           tlast = tval
+        for yval in [temp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2]:
+          if   yval<ymin: ymin = yval
+          elif yval>ymax: ymax = yval
   
   # PLOT PARAMETERS
   tmin = tlast - dtwidth + dtmargin
@@ -118,10 +130,14 @@ def monitor(**kwargs):
   axis2.grid(axis='x',which='minor',linewidth=0.2)
   axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
   axis2.grid(axis='y',which='major',linewidth=0.2)
-  templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
-  setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=5)
-  dewpline, = axis2.plot(tvals,dewpvals,color='blue',marker='v',label="Dummy dewpoint",linewidth=1,markersize=5)
-  axis2.legend(loc='upper left',framealpha=0,fontsize=14)
+  setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=4)
+  templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',label="Temp. YM1",linewidth=0.5) #,marker='^',markersize=1
+  templine_YM2, = axis2.plot(tvals,tempvals_YM2,'--',color='limegreen',label="Temp. YM2",linewidth=0.5) #,marker='v',markersize=1
+  templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=4)
+  dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
+  dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='limegreen',marker='v',label="Dewpoint YM2",linewidth=1,markersize=4)
+  legorder = [templine,setpline,templine_YM1,templine_YM2,dewpline_YM1,dewpline_YM2]
+  axis2.legend(legorder,[l.get_label() for l in legorder],loc='upper left',framealpha=0,fontsize=13)
   
   #fig.canvas.draw()
   #plt.show(block=True)
