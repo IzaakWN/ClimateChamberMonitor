@@ -293,7 +293,10 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
           axis1.set_xlim([tval-(tmax-tmin-dtmargin),tval+dtmargin])
         fig.canvas.draw()
         #fig.canvas.flush_events()
-        plt.pause(tstep)
+        twait = tstep-(datetime.datetime.now()-tval).total_seconds()
+        print tstep, twait
+        if twait>0:
+          plt.pause(twait)
         #time.sleep(tstep)
       
       print "Monitoring finished!"
