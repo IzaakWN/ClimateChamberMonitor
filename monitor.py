@@ -67,11 +67,11 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          checkInterlock(client,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM1)
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          checkInterlock(client,temp,dewp_YM2)
+          checkInterlock(chamber,temp,dewp_YM2)
         else:
           temp_YM2 = -1.
           dewp_YM2 = -1.
@@ -248,7 +248,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          checkInterlock(client,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM1)
           dewpvals_YM1.append(dewp_YM1)
           tempvals_YM1.append(temp_YM1)
           dewpline_YM1.set_xdata(tvals)
@@ -258,7 +258,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          checkInterlock(client,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM1)
           dewpvals_YM2.append(dewp_YM2)
           tempvals_YM2.append(temp_YM2)
           dewpline_YM2.set_xdata(tvals)
