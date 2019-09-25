@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
-from utils import warning
+from utils import warning, checkGUIMode
 from plotter import setTimeAxisMinorLocators
 from commands import connectClimateChamber, executeSimServCmd, unpackSimServData,\
                      forceWarmUp, forceWarmUpEvent, stopClimateChamberEvent, checkActiveWarnings, openActiveWarnings,\
@@ -67,15 +67,11 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          if abs(dewp_YM1-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10%% of dewpoint (%.3f)!"%(temp,dewp_YM1))
-            #forceWarmUp(client)
+          checkInterlock(client,temp,dewp_YM1)
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          if abs(dewp_YM2-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10%% of dewpoint (%.3f)!"%(temp,dewp_YM2))
-            #forceWarmUp(client)
+          checkInterlock(client,temp,dewp_YM2)
         else:
           temp_YM2 = -1.
           dewp_YM2 = -1.
@@ -249,13 +245,10 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         tvals.append(tval)
         temp    = chamber.getTemp()
         setp    = chamber.getSetp()
-        tempnom = max(0.001,abs(temp))
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          if abs(dewp_YM1-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10%% of dewpoint (%.3f)!"%(temp,dewp_YM1))
-            #forceWarmUp(client)
+          checkInterlock(client,temp,dewp_YM1)
           dewpvals_YM1.append(dewp_YM1)
           tempvals_YM1.append(temp_YM1)
           dewpline_YM1.set_xdata(tvals)
@@ -265,9 +258,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          if abs(dewp_YM2-temp)/tempnom<0.10:
-            warning("INTERLOCK! Temperature (%.3f) within 10%% of dewpoint (%.3f)!"%(temp,dewp_YM2))
-            #forceWarmUp(client)
+          checkInterlock(client,temp,dewp_YM1)
           dewpvals_YM2.append(dewp_YM2)
           tempvals_YM2.append(temp_YM2)
           dewpline_YM2.set_xdata(tvals)
@@ -314,8 +305,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
 def main(args):
   
   # CHECKS
-  if not args.batchmode and 'DISPLAY' not in os.environ:
-    print "Warning! Cannot open plot (no 'DISPLAY' environmental variable found). Running in batch mode..."
+  args.batchmode = not checkGUIMode(args.batchmode)
   
   # PARAMETERS
   kwargs = {

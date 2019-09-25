@@ -31,3 +31,12 @@ def warning(string,**kwargs):
   string = "%s%s\033[0m"%(pre,string)
   print string.replace('\n','\n'+' '*(len(pre)-18))
   
+
+def checkGUIMode(batchmode):
+  """Check if GUI is possible."""
+  if batchmode:
+    return False
+  if 'DISPLAY' not in os.environ:
+    print "Warning! Cannot open plot (no 'DISPLAY' environmental variable found). Running in batch mode..."
+    return False
+  return True

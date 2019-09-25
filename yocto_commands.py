@@ -1,4 +1,5 @@
 # Author: Izaak Neutelings (September, 2019)
+# -*- coding: utf-8 -*-
 #
 # Sources:
 #  https://www.yoctopuce.com/EN/products/yocto-meteo/doc.html

@@ -224,7 +224,7 @@ def forceWarmUp(client,target=24,gradient=1):
   if int(executeSimServCmd(client,'GET PRGM STATUS')[0])!=0:
     executeSimServCmd(client,'STOP PRGM')
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
-  warning("Force warm up to target temperature %.1f degrees C with a gradient of %.1f K/min..."%(target,gradient))
+  warning(u"Force warm up to target temperature %.1f\u00b0C with a gradient of %.1f K/min..."%(target,gradient))
   executeSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
   executeSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
   executeSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
@@ -248,7 +248,7 @@ def stopClimateChamber(client):
   """Stop climate box."""
   pgmstatus = int(executeSimServCmd(client,'GET PRGM STATUS')[0])
   temp = getTemp(client)
-  warning("Stop running at temperature %.1f degrees C; no warm-up!"%(temp))
+  warning(u"Stop running at temperature %.1f\u00b0C; no warm-up!"%(temp))
   if pgmstatus!=0:
     executeSimServCmd(client,'STOP PRGM')
   else:
@@ -275,6 +275,14 @@ def checkActiveWarnings(client,**kwargs):
         nactive += 1
   return nactive
   
+
+def checkInterlock(client,temp,dewp):
+  """Check if the dewpoint has reach the temperature."""
+  if temp-dewp<5:
+    warning(u"INTERLOCK! Temperature (%.2f\u00b0C) within 5\u00b0C of dewpoint (%.2f\u00b0C)!"%(temp,dewp_YM1))
+    #forceWarmUp(client)
+  
+
 
 def getActiveWarnings(client,**kwargs):
   """Get active messages; by default alarms and warnings only."""

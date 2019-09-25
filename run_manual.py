@@ -57,6 +57,9 @@ def stopManualRun(client):
 
 def main(args):
   
+  # CHECKS
+  args.batchmode = not checkGUIMode(args.batchmode)
+  
   # CONNECT
   print "Connecting to climate chamber..."
   client = connectClimateChamber()
