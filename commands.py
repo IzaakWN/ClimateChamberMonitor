@@ -279,7 +279,7 @@ def checkActiveWarnings(client,**kwargs):
 def checkInterlock(client,temp,dewp):
   """Check if the dewpoint has reach the temperature."""
   if temp-dewp<5:
-    warning(u"INTERLOCK! Temperature (%.2f\u00b0C) within 5\u00b0C of dewpoint (%.2f\u00b0C)!"%(temp,dewp_YM1))
+    warning(u"INTERLOCK! Temperature (%.2f\u00b0C) within 5\u00b0C of dewpoint (%.2f\u00b0C)!"%(temp,dewp))
     #forceWarmUp(client)
   
 
