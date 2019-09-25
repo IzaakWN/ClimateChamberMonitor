@@ -173,7 +173,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       templine, = axis2.plot(tvals,tempvals,color='red',marker='o',label="Temperature",linewidth=2,markersize=5)
       dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=6)
       dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='limegreen',marker='v',label="Dewpoint YM2",linewidth=1,markersize=5)
-      legorder = [templine_YM1,templine_YM2,setpline,templine,dewpline_YM1,dewpline_YM2]
+      legorder = [templine,setpline,templine_YM1,templine_YM2,dewpline_YM1,dewpline_YM2]
       axis2.legend(legorder,[l.get_label() for l in legorder],loc='upper left',framealpha=0,fontsize=13)
       
       # TEXT
