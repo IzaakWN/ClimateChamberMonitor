@@ -10,12 +10,14 @@
 # axis:     https://matplotlib.org/3.1.1/api/axes_api.html#axis-labels-title-and-legend
 import os, sys, time, datetime
 import csv
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo
 import numpy as np
+matplotlib.use('Agg')
 
 
 def setTimeAxisMinorLocators(axis,twidth=None):
@@ -37,7 +39,7 @@ def setTimeAxisMinorLocators(axis,twidth=None):
     axis.xaxis.set_minor_locator(mdates.SecondLocator(bysecond=[i*2 for i in xrange(30)]))
   
 
-def monitor(**kwargs):
+def plotter(**kwargs):
   """Start monitoring."""
   
   # SETTINGS
@@ -148,7 +150,7 @@ def monitor(**kwargs):
 def main(args):
   
   # MONITOR
-  monitor(log=args.input,name=args.output,
+  plotter(log=args.input,name=args.output,
           twidth=args.twidth,title=args.title,batch=args.batchmode)
   
 
