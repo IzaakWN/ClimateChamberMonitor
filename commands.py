@@ -224,6 +224,10 @@ def unpackSimServData(data):
 
 def connectClimateChamber(ip=defaultip,port=2049):
   """Connect to climate chamber via give IP address."""
+  try:
+    socket.inet_aton(ip)
+  except socket.error:
+    raise IOError("Socket error! Could not find IP %s!"%ip)
   client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # create stream socket
   result = client.connect((ip,port)) # connect to protocol server
   client.__class__ = ClimateChamber
