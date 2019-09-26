@@ -3,9 +3,8 @@
 import os, sys, time, datetime
 import socket
 sys.path.append(os.path.dirname(__file__))
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData,\
-                     getRunStatus, checkActiveWarnings, getActiveWarnings,\
-                     getTemp, getSetp, getDewp, getAir, getDryer
+from commands import connectClimateChamber, sendSimServCmd, unpackSimServData, defaultip\
+                     getRunStatus, checkActiveWarnings, getActiveWarnings
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo
 
@@ -42,12 +41,13 @@ def getCurrentStatus(**kwargs):
   """Get current status."""
   
   # SETTINGS
+  ip       = kwargs.get('ip',  '130.60.164.144' )
   logname  = kwargs.get('out', "status.txt"     )
   tformat  = '%d-%m-%Y %H:%M:%S'
   
   # CONNECT
   print "Connecting to climate chamber..."
-  chamber = connectClimateChamber()
+  chamber = connectClimateChamber(ip=ip)
   ymeteo1 = connectYoctoMeteo(YOCTO.ymeteo1)
   ymeteo2 = connectYoctoMeteo(YOCTO.ymeteo2)
   
