@@ -79,8 +79,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         air     = chamber.getAir()
         dry     = chamber.getDryer()
         run     = 0
-        updateStatus()
-        checkWarnings()
+        # TODO: checkWarnings()
         print "  %20s: %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f"%(tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2)
         logger.writerow([tval.strftime(tformat),temp,setp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2,air,dry,run])
         time.sleep(tstep)

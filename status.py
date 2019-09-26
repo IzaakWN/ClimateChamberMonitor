@@ -41,8 +41,8 @@ def getCurrentStatus(**kwargs):
   """Get current status."""
   
   # SETTINGS
-  ip       = kwargs.get('ip',  '130.60.164.144' )
-  logname  = kwargs.get('out', "status.txt"     )
+  ip       = kwargs.get('ip',  defaultip    )
+  logname  = kwargs.get('out', "status.txt" )
   tformat  = '%d-%m-%Y %H:%M:%S'
   
   # CONNECT
