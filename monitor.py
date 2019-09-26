@@ -165,7 +165,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       #axis2.set_xlabel("Time",fontsize=16)
       axis2.set_ylabel("Temperature [$^\circ$C]",fontsize=16)
       axis2.grid(axis='x',which='minor',linewidth=0.2)
-      axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
+      axis2.grid(axis='x',which='major',color='darkred',linewidth=0.4,linestyle='--')
       axis2.grid(axis='y',which='major',linewidth=0.2)
       setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=4)
       templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',label="Temp. YM1",linewidth=0.5) #,marker='^',markersize=1

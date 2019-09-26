@@ -11,14 +11,14 @@
 import os, sys, time, datetime
 import csv
 import matplotlib
+matplotlib.use('Agg')
+plt.switch_backend('agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo
 import numpy as np
-matplotlib.use('Agg')
-plt.switch_backend('agg')
 
 
 def setTimeAxisMinorLocators(axis,twidth=None):
@@ -131,7 +131,7 @@ def plotter(**kwargs):
   #axis2.set_xlabel("Time",fontsize=16)
   axis2.set_ylabel("Temperature [$^\circ$C]",fontsize=16)
   axis2.grid(axis='x',which='minor',linewidth=0.2)
-  axis2.grid(axis='x',which='major',color='darkred',linewidth=1,linestyle='--')
+  axis2.grid(axis='x',which='major',color='darkred',linewidth=0.4,linestyle='--')
   axis2.grid(axis='y',which='major',linewidth=0.2)
   setpline, = axis2.plot(tvals,setpvals,color='darkgrey',marker='.',label="Target temp.",linewidth=0.5,markersize=4)
   templine_YM1, = axis2.plot(tvals,tempvals_YM1,'--',color='blue',label="Temp. YM1",linewidth=0.5) #,marker='^',markersize=1
