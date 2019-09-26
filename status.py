@@ -86,7 +86,7 @@ def getCurrentStatus(**kwargs):
                       "compr. air:  %4s"%('ON' if chamber.getAir()==1 else 'OFF'))
     string  += addRow("time stamp:  %s"%(tnow.strftime(tformat)),
                       "dryer:       %4s"%('ON' if chamber.getDryer()==1 else 'OFF'))
-    string  += addRow("setpoint:    %8.3f"%(getSetp(chamber)),
+    string  += addRow("setpoint:    %8.3f"%(chamber.getSetp()),
                       "alarms:      %4d"%nalarms)
     string  += addRow("temperature: %8.3f"%(chamber.getTemp()),
                       "warnings:    %4d"%nwarns)
