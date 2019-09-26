@@ -145,6 +145,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       axis1.set_yticklabels(['OFF','ON'],fontsize=14)
       #axis2.yaxis.set_tick_params(fontsize=14)
       axis1.grid(axis='x',which='minor',linewidth=0.2)
+      axis1.grid(axis='x',which='major',linewidth=0.5,color='darkred',linestyle='--')
       axis1.grid(axis='y',which='major',linewidth=0.2)
       airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
       dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=1,markersize=4)
