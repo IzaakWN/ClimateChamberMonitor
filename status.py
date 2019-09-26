@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(__file__))
 from commands import connectClimateChamber, sendSimServCmd, unpackSimServData, defaultip,\
                      getRunStatus, checkActiveWarnings, getActiveWarnings
 import yocto_commands as YOCTO
-from yocto_commands import connectYoctoMeteo
+from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 
 
 def addRow(col1,col2,just=38):
