@@ -12,8 +12,8 @@ import os, sys, time, datetime
 import csv
 import matplotlib
 matplotlib.use('Agg')
-plt.switch_backend('agg')
 import matplotlib.pyplot as plt
+#plt.switch_backend('agg')
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import yocto_commands as YOCTO
