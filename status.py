@@ -3,7 +3,7 @@
 import os, sys, time, datetime
 import socket
 sys.path.append(os.path.dirname(__file__))
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData, defaultip\
+from commands import connectClimateChamber, sendSimServCmd, unpackSimServData, defaultip,\
                      getRunStatus, checkActiveWarnings, getActiveWarnings
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo
