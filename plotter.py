@@ -18,6 +18,7 @@ import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo
 import numpy as np
 matplotlib.use('Agg')
+plt.switch_backend('agg')
 
 
 def setTimeAxisMinorLocators(axis,twidth=None):
