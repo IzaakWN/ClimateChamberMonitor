@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import numpy as np
+from utils import warning, checkGUIMode
 from monitor import monitor
 from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
 import yocto_commands as YOCTO

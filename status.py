@@ -42,13 +42,12 @@ def getCurrentStatus(**kwargs):
   """Get current status."""
   
   # SETTINGS
-  ip       = kwargs.get('ip',  '130.60.164.144' )
   logname  = kwargs.get('out', "status.txt"     )
   tformat  = '%d-%m-%Y %H:%M:%S'
   
   # CONNECT
   print "Connecting to climate chamber..."
-  chamber = connectClimateChamber(ip=ip)
+  chamber = connectClimateChamber()
   ymeteo1 = connectYoctoMeteo(YOCTO.ymeteo1)
   ymeteo2 = connectYoctoMeteo(YOCTO.ymeteo2)
   

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import numpy as np
+from utils import warning, checkGUIMode
 from monitor import monitor
 from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
 import yocto_commands as YOCTO
@@ -19,8 +20,6 @@ parser.add_argument('-T', '--target',    dest='target', type=float, default=20.0
                                          help="target temperature in degrees Celsius" )
 parser.add_argument('-g', '--gradient',  dest='gradient', type=float, default=5.0, action='store',
                                          help="gradient in K/min." )
-#parser.add_argument('-r', '--run',       dest='run', default=False, action='store_true',
-#                                         help="manual run" )
 parser.add_argument('-t', '--time',      dest='dtime', type=int, default=-1, action='store',
                                          help="duration of data taking in seconds" )
 parser.add_argument('-n', '--nsamples',  dest='nsamples', type=int, default=-1, action='store',
