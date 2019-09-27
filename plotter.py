@@ -115,7 +115,8 @@ def plotter(**kwargs):
   axis1.grid(axis='y',which='major',linewidth=0.2)
   airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
   dryline, = axis1.plot(tvals,dryvals,color='blue',marker='v',label="Dryer",linewidth=1,markersize=4)
-  axis1.legend(loc='center left',framealpha=0,fontsize=14)
+  legend1  = axis1.legend(loc='center left',framealpha=0.8,fontsize=14)
+  legend1.get_frame().set_linewidth(0)
   
   # TEMPERATURE SUBPLOT
   axis2 = plt.subplot(grid[1],sharex=axis1)
@@ -140,8 +141,8 @@ def plotter(**kwargs):
   dewpline_YM1, = axis2.plot(tvals,dewpvals_YM1,color='blue',marker='^',label="Dewpoint YM1",linewidth=1,markersize=5)
   dewpline_YM2, = axis2.plot(tvals,dewpvals_YM2,color='limegreen',marker='v',label="Dewpoint YM2",linewidth=1,markersize=4)
   legorder = [templine,setpline,templine_YM1,templine_YM2,dewpline_YM1,dewpline_YM2]
-  legend   = axis2.legend(legorder,[l.get_label() for l in legorder],loc='upper left',framealpha=0.6,fontsize=13)
-  legend.get_frame().set_linewidth(0)
+  legend2  = axis2.legend(legorder,[l.get_label() for l in legorder],loc='upper left',framealpha=0.8,fontsize=13)
+  legend2.get_frame().set_linewidth(0)
   
   #fig.canvas.draw()
   #plt.show(block=True)
