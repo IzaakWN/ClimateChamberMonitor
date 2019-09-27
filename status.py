@@ -58,18 +58,18 @@ def getCurrentStatus(**kwargs):
   if chamber==None:
     string  = "  Climate chamber not found in network."
     string += addRow("IP address:  %s"%(ip),
-                     "compr. air:  ")
-    string += addRow("time stamp:  %s"%(tnow.strftime(tformat)),
-                     "dryer:       ")
-    string += addRow("setpoint:    ",
-                     "alarms:      ")
-    string += addRow("temperature: ",
-                     "warnings:    ")
-    string += addRow("temp. YM1:   ",
-                     "messages:    ")
-    string += addRow("temp. YM2:   ","")
-    string += addRow("dewp. YM1:   ","")
-    string += addRow("dewp. YM2:   ","")
+                     "Compr. air:  ")
+    string += addRow("Time stamp:  %s"%(tnow.strftime(tformat)),
+                     "Dryer:       ")
+    string += addRow("Setpoint:    ",
+                     "Alarms:      ")
+    string += addRow("Temperature: ",
+                     "Warnings:    ")
+    string += addRow("Temp. YM1:   ",
+                     "Messages:    ")
+    string += addRow("Temp. YM2:   ","")
+    string += addRow("Dewp. YM1:   ","")
+    string += addRow("Dewp. YM2:   ","")
   else:
     temp_YM1, temp_YM2, dewp_YM1, dewp_YM2 = "", "", "", ""
     if ymeteo1:
@@ -83,18 +83,18 @@ def getCurrentStatus(**kwargs):
     nmsgs    = checkActiveWarnings(chamber,type=4)
     string   = "  Climate chamber's currect status: %s"%(getRunStatus(chamber))
     string  += addRow("IP address:  %s"%(ip),
-                      "compr. air:  %4s"%('ON' if chamber.getAir()==1 else 'OFF'))
-    string  += addRow("time stamp:  %s"%(tnow.strftime(tformat)),
-                      "dryer:       %4s"%('ON' if chamber.getDryer()==1 else 'OFF'))
-    string  += addRow("setpoint:    %8.3f"%(chamber.getSetp()),
-                      "alarms:      %4d"%nalarms)
-    string  += addRow("temperature: %8.3f"%(chamber.getTemp()),
-                      "warnings:    %4d"%nwarns)
-    string  += addRow("temp. YM1:   %8s"%(temp_YM1),
-                      "messages:    %4d"%nmsgs)
-    string  += addRow("temp. YM2:   %8s"%(temp_YM2),"")
-    string  += addRow("dewp. YM1:   %8s"%(dewp_YM1),"")
-    string  += addRow("dewp. YM2:   %8s"%(dewp_YM2),"")
+                      "Compr. air:  %4s"%('ON' if chamber.getAir()==1 else 'OFF'))
+    string  += addRow("Time stamp:  %s"%(tnow.strftime(tformat)),
+                      "Dryer:       %4s"%('ON' if chamber.getDryer()==1 else 'OFF'))
+    string  += addRow("Setpoint:    %8.3f"%(chamber.getSetp()),
+                      "Alarms:      %4d"%nalarms)
+    string  += addRow("Temperature: %8.3f"%(chamber.getTemp()),
+                      "Warnings:    %4d"%nwarns)
+    string  += addRow("Temp. YM1:   %8s"%(temp_YM1),
+                      "Messages:    %4d"%nmsgs)
+    string  += addRow("Temp. YM2:   %8s"%(temp_YM2),"")
+    string  += addRow("Dewp. YM1:   %8s"%(dewp_YM1),"")
+    string  += addRow("Dewp. YM2:   %8s"%(dewp_YM2),"")
   print "Status check finished!"
   
   # WRITE STATUS
