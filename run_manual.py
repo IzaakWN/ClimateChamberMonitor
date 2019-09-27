@@ -10,7 +10,7 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 from utils import warning, checkGUIMode
 from monitor import monitor
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
+from chamber_commands import connectClimateChamber
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 from argparse import ArgumentParser
@@ -45,19 +45,19 @@ def startManualRun(chamber,target=20.0,gradient=3,air=True,dryer=True):
   """Start manual run."""
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
   print "Setting up manual run with target temperature = %.1f and gradient %.1f K/min..."%(target,gradient)
-  sendSimServCmd(chamber,'SET CTRL_VAR SETPOINT',[1,target])
-  sendSimServCmd(chamber,'SET GRAD_UP VAL', [1,gradient])
-  sendSimServCmd(chamber,'SET GRAD_DWN VAL',[1,gradient])
-  sendSimServCmd(chamber,'SET DIGI_OUT VAL', [7,int(air)]) # AIR1  ON
-  sendSimServCmd(chamber,'SET DIGI_OUT VAL',[8,int(dryer)])  # DRYER ON
+  chamber.sendSimServCmd('SET CTRL_VAR SETPOINT',[1,target])
+  chamber.sendSimServCmd('SET GRAD_UP VAL', [1,gradient])
+  chamber.sendSimServCmd('SET GRAD_DWN VAL',[1,gradient])
+  chamber.sendSimServCmd('SET DIGI_OUT VAL', [7,int(air)]) # AIR1  ON
+  chamber.sendSimServCmd('SET DIGI_OUT VAL',[8,int(dryer)])  # DRYER ON
   print "Starting manual run..."
-  sendSimServCmd(chamber,'START MANUAL',[1,1])
+  chamber.sendSimServCmd('START MANUAL',[1,1])
   
 
 def stopManualRun(chamber):
   """Stop manual run."""
   print "Stopping manual run..."
-  sendSimServCmd(chamber,'START MANUAL',[1,0])
+  chamber.sendSimServCmd('START MANUAL',[1,0])
   
 
 def main(args):

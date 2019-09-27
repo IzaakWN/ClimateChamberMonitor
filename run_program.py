@@ -10,7 +10,7 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 from utils import warning, checkGUIMode
 from monitor import monitor
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
+from chamber_commands import connectClimateChamber
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 from argparse import ArgumentParser
@@ -38,7 +38,7 @@ args = parser.parse_args()
 def checkProgram(chamber,prgmid):
   """Check whether a program with given number exists,
   and return name if it does, otherwise None."""
-  nprgm = sendSimServCmd(chamber,'GET PRGM NUM')
+  nprgm = chamber.sendSimServCmd('GET PRGM NUM')
   assert prgmid<=nprgm, "Did not find program %d out of %d available programs"%(prgmid,nprgm)
   return True
   
@@ -47,16 +47,16 @@ def startProgram(chamber,prgmid,nruns=1):
   """Start manual run."""
   checkProgram(chamber,prgmid)
   print "Starting program %s..."%(prgmid)
-  sendSimServCmd(chamber,'START PRGM',[prgmid,nruns])
+  chamber.sendSimServCmd('START PRGM',[prgmid,nruns])
   time.sleep(2)
-  prgmname = str(sendSimServCmd(chamber,'GET PRGM NAME')[0])
+  prgmname = str(chamber.sendSimServCmd('GET PRGM NAME')[0])
   print "Started pogram '%s'"%(prgmname)
   
 
 def stopProgram(chamber):
   """Stop manual run."""
   print "Stopping program..."
-  sendSimServCmd(chamber,'STOP PRGM')
+  chamber.sendSimServCmd('STOP PRGM')
   
 
 def main(args):

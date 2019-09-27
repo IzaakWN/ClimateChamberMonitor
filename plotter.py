@@ -15,8 +15,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
-import yocto_commands as YOCTO
-from yocto_commands import connectYoctoMeteo
 import numpy as np
 
 

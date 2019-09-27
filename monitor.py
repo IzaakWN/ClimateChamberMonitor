@@ -17,9 +17,9 @@ import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Button
 from utils import warning, checkGUIMode
 from plotter import setTimeAxisMinorLocators
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData,\
-                     checkActiveWarnings, openActiveWarnings, getRunStatus,\
-                     checkInterlock, forceWarmUp, forceWarmUpEvent, stopClimateChamberEvent
+from chamber_commands import connectClimateChamber, sendSimServCmd, unpackSimServData,\
+                             checkActiveWarnings, openActiveWarnings, getRunStatus,\
+                             checkInterlock, forceWarmUp, forceWarmUpEvent, stopClimateChamberEvent
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 

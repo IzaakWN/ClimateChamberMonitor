@@ -2,7 +2,7 @@
 # coding: latin-1
 import sys, time
 import socket
-from commands import sendSimServCmd, unpackSimServData
+from chamber_commands import sendSimServCmd, unpackSimServData
 
 ip     = '130.60.164.144' # '192.168.121.100'
 port   = 2049

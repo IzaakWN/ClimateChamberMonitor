@@ -10,7 +10,7 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 from utils import warning, checkGUIMode
 from monitor import monitor
-from commands import connectClimateChamber, sendSimServCmd, unpackSimServData
+from chamber_commands import connectClimateChamber, sendSimServCmd, unpackSimServData
 import yocto_commands as YOCTO
 from yocto_commands import connectYoctoMeteo, disconnectYoctoMeteo
 from argparse import ArgumentParser
