@@ -7,6 +7,7 @@
 import os, sys
 from math import log
 sys.path.append(os.path.join(os.path.dirname(__file__),"yoctolib_python","Sources"))
+from utils import warning
 from yocto_api import YAPI, YRefParam, YModule
 from yocto_humidity import YHumidity
 from yocto_temperature import YTemperature

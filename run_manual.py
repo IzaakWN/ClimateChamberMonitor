@@ -32,28 +32,32 @@ parser.add_argument('-o', '--output',    dest='output', type=str, default="monit
                                          help="output log file with monitoring data (csv format)" )
 parser.add_argument('-b', '--batch',     dest='batchmode', default=False, action='store_true',
                                          help="monitor in batch mode (no GUI window)" )
+parser.add_argument('-D', '--no-dryer',  dest='nodryer', default=False, action='store_true',
+                                         help="turn OFF dryer (by default ON)" )
+parser.add_argument('-A', '--no-air',    dest='noair', default=False, action='store_true',
+                                         help="turn OFF compressed air (by default ON)" )
 parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='store_true',
                                          help="set verbose" )
 args = parser.parse_args()
 
 
-def startManualRun(client,target=20.0,gradient=2):
+def startManualRun(chamber,target=20.0,gradient=2):
   """Start manual run."""
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
   print "Setting up manual run with target temperature = %.1f and gradient %.1f K/min..."%(target,gradient)
-  sendSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
-  sendSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
-  sendSimServCmd(client,'SET GRAD_DWN VAL',[1,gradient])
-  sendSimServCmd(client,'SET DIGI_OUT VAL', [7,1]) # AIR1  ON
-  sendSimServCmd(client,'SET DIGI_OUT VAL',[8,0])  # DRYER OFF
+  sendSimServCmd(chamber,'SET CTRL_VAR SETPOINT',[1,target])
+  sendSimServCmd(chamber,'SET GRAD_UP VAL', [1,gradient])
+  sendSimServCmd(chamber,'SET GRAD_DWN VAL',[1,gradient])
+  sendSimServCmd(chamber,'SET DIGI_OUT VAL', [7,1]) # AIR1  ON
+  sendSimServCmd(chamber,'SET DIGI_OUT VAL',[8,0])  # DRYER OFF
   print "Starting manual run..."
-  sendSimServCmd(client,'START MANUAL',[1,1])
+  sendSimServCmd(chamber,'START MANUAL',[1,1])
   
 
-def stopManualRun(client):
+def stopManualRun(chamber):
   """Stop manual run."""
   print "Stopping manual run..."
-  sendSimServCmd(client,'START MANUAL',[1,0])
+  sendSimServCmd(chamber,'START MANUAL',[1,0])
   
 
 def main(args):
@@ -63,15 +67,17 @@ def main(args):
   
   # CONNECT
   print "Connecting to climate chamber..."
-  client = connectClimateChamber()
+  chamber = connectClimateChamber()
+  ymeteo1 = connectYoctoMeteo(YOCTO.ymeteo1)
+  ymeteo2 = connectYoctoMeteo(YOCTO.ymeteo2)
   
   # RUN & MONITOR
   target   = args.target
   gradient = args.gradient
-  startManualRun(client,target=target,gradient=gradient)
-  monitor(client,batch=args.batchmode,out=args.output,
+  startManualRun(chamber,target=target,gradient=gradient)
+  monitor(chamber,ymeteo1,ymeteo2,batch=args.batchmode,out=args.output,
                  nsamples=args.nsamples,tstep=args.stepsize,twidth=args.twidth)
-  stopManualRun(client)
+  stopManualRun(chamber)
   
   # DISCONNECT
   print "Closing connection..."

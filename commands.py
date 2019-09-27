@@ -238,7 +238,7 @@ def forceWarmUp(client,target=24,gradient=1):
   """Force warm up."""
   if int(sendSimServCmd(client,'GET PRGM STATUS')[0])!=0:
     sendSimServCmd(client,'STOP PRGM')
-  assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
+  assert isinstance(target,float) or isinstance(target,int),u"Target temperature (%s\u00b0C) is not a number!"%(target)
   warning(u"Force warm up to target temperature %.1f\u00b0C with a gradient of %.1f K/min..."%(target,gradient))
   sendSimServCmd(client,'SET CTRL_VAR SETPOINT',[1,target])
   sendSimServCmd(client,'SET GRAD_UP VAL', [1,gradient])
@@ -246,7 +246,7 @@ def forceWarmUp(client,target=24,gradient=1):
   print "Turning on compressed air and dryer..."
   sendSimServCmd(client,'SET DIGI_OUT VAL',[7,1]) # AIR1  ON
   sendSimServCmd(client,'SET DIGI_OUT VAL',[8,1]) # DRYER ON
-  print "Starting forced warm-up..."
+  print u"Starting forced warm-up to %.3f\u00b0C..."%target
   sendSimServCmd(client,'START MANUAL',[1,1])
   warning("Please turn the climate box off yourself!")
   
@@ -263,7 +263,7 @@ def stopClimateChamber(client):
   """Stop climate box."""
   pgmstatus = int(sendSimServCmd(client,'GET PRGM STATUS')[0])
   temp = getTemp(client)
-  warning(u"Stop running at temperature %.1f\u00b0C; no warm-up!"%(temp))
+  warning(u"Stop running at temperature %.1f\u00b0C (no warm-up)..."%(temp))
   if pgmstatus!=0:
     sendSimServCmd(client,'STOP PRGM')
   else:

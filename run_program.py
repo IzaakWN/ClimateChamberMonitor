@@ -35,28 +35,28 @@ parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='
 args = parser.parse_args()
 
 
-def checkProgram(client,prgmid):
+def checkProgram(chamber,prgmid):
   """Check whether a program with given number exists,
   and return name if it does, otherwise None."""
-  nprgm = sendSimServCmd(client,'GET PRGM NUM')
+  nprgm = sendSimServCmd(chamber,'GET PRGM NUM')
   assert prgmid<=nprgm, "Did not find program %d out of %d available programs"%(prgmid,nprgm)
   return True
   
 
-def startProgram(client,prgmid,nruns=1):
+def startProgram(chamber,prgmid,nruns=1):
   """Start manual run."""
-  checkProgram(client,prgmid)
+  checkProgram(chamber,prgmid)
   print "Starting program %s..."%(prgmid)
-  sendSimServCmd(client,'START PRGM',[prgmid,nruns])
-  #prgmname = str(sendSimServCmd(client,'GET PRGM NAME',[prgmid])[0])
+  sendSimServCmd(chamber,'START PRGM',[prgmid,nruns])
+  #prgmname = str(sendSimServCmd(chamber,'GET PRGM NAME',[prgmid])[0])
   #time.sleep(4)
   #print "Started pogram '%s'"%(prgmname)
   
 
-def stopProgram(client):
+def stopProgram(chamber):
   """Stop manual run."""
   print "Stopping program..."
-  sendSimServCmd(client,'STOP PRGM')
+  sendSimServCmd(chamber,'STOP PRGM')
   
 
 def main(args):
@@ -66,15 +66,17 @@ def main(args):
   
   # CONNECT
   print "Connecting to climate chamber..."
-  client = connectClimateChamber()
+  chamber = connectClimateChamber()
+  ymeteo1 = connectYoctoMeteo(YOCTO.ymeteo1)
+  ymeteo2 = connectYoctoMeteo(YOCTO.ymeteo2)
   
   # RUN & MONITOR
   prgmid    = args.prgmid
   nruns     = args.nruns
-  startProgram(client,prgmid,nruns)
-  monitor(client,batch=args.batchmode,out=args.output,
+  startProgram(chamber,prgmid,nruns)
+  monitor(chamber,ymeteo1,ymeteo2,batch=args.batchmode,out=args.output,
                  nsamples=args.nsamples,tstep=args.stepsize,twidth=args.twidth)
-  stopProgram(client)
+  stopProgram(chamber)
   
   # DISCONNECT
   print "Closing connection..."

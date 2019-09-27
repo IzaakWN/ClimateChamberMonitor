@@ -11,9 +11,8 @@
 import os, sys, time, datetime
 import csv
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-#plt.switch_backend('agg')
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
 import yocto_commands as YOCTO
@@ -88,7 +87,7 @@ def plotter(**kwargs):
         if not tlast or tlast<tval:
           tlast = tval
         for yval in [temp,temp_YM1,temp_YM2,dewp_YM1,dewp_YM2]:
-          if   yval<ymin: ymin = yval
+          if   yval<ymin: ymin = yval 
           elif yval>ymax: ymax = yval
   
   # PLOT PARAMETERS
@@ -158,6 +157,7 @@ def main(args):
   
 
 if __name__ == '__main__':
+  plt.switch_backend('agg')
   from argparse import ArgumentParser
   description = '''Plot climate chamber monitoring data.'''
   parser = ArgumentParser(prog="plotter",description=description,epilog="Good luck!")
