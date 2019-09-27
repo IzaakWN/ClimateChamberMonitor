@@ -234,7 +234,7 @@ def connectClimateChamber(ip=defaultip,port=2049):
   return client
   
 
-def forceWarmUp(client,target=24,gradient=1):
+def forceWarmUp(client,target=24,gradient=3):
   """Force warm up."""
   if int(sendSimServCmd(client,'GET PRGM STATUS')[0])!=0:
     sendSimServCmd(client,'STOP PRGM')
@@ -263,10 +263,13 @@ def stopClimateChamber(client):
   """Stop climate box."""
   pgmstatus = int(sendSimServCmd(client,'GET PRGM STATUS')[0])
   temp = getTemp(client)
-  warning(u"Stop running at temperature %.1f\u00b0C (no warm-up)..."%(temp))
   if pgmstatus!=0:
+    prgmid   = int(sendSimServCmd(chamber,'GET PRGM NUMBER')[0])
+    prgmname = str(sendSimServCmd(chamber,'GET PRGM NAME')[0])
+    warning(u"Stop program '%s' (%d) at temperature %.1f\u00b0C without warm-up..."%(prgmname,prgmid,temp))
     sendSimServCmd(client,'STOP PRGM')
   else:
+    warning(u"Stop manual run at temperature %.1f\u00b0C without warm-up..."%(temp))
     sendSimServCmd(client,'START MANUAL',[1,0])
   
 

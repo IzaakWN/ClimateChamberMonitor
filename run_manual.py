@@ -19,7 +19,7 @@ parser = ArgumentParser(prog="run_manual",description=description,epilog="Good l
 parser.add_argument('-T', '--target',    dest='target', type=float, default=20.0, action='store',
                                          help="target temperature in degrees Celsius" )
 parser.add_argument('-g', '--gradient',  dest='gradient', type=float, default=5.0, action='store',
-                                         help="gradient in K/min." )
+                                         help="gradient in K/min (>3.2 cooling, >3.5 heating)" )
 parser.add_argument('-t', '--time',      dest='dtime', type=int, default=-1, action='store',
                                          help="duration of data taking in seconds" )
 parser.add_argument('-n', '--nsamples',  dest='nsamples', type=int, default=-1, action='store',
@@ -41,15 +41,15 @@ parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='
 args = parser.parse_args()
 
 
-def startManualRun(chamber,target=20.0,gradient=2):
+def startManualRun(chamber,target=20.0,gradient=3,air=True,dryer=True):
   """Start manual run."""
   assert isinstance(target,float) or isinstance(target,int), "Target temperature (%s) is not a number!"%(target)
   print "Setting up manual run with target temperature = %.1f and gradient %.1f K/min..."%(target,gradient)
   sendSimServCmd(chamber,'SET CTRL_VAR SETPOINT',[1,target])
   sendSimServCmd(chamber,'SET GRAD_UP VAL', [1,gradient])
   sendSimServCmd(chamber,'SET GRAD_DWN VAL',[1,gradient])
-  sendSimServCmd(chamber,'SET DIGI_OUT VAL', [7,1]) # AIR1  ON
-  sendSimServCmd(chamber,'SET DIGI_OUT VAL',[8,0])  # DRYER OFF
+  sendSimServCmd(chamber,'SET DIGI_OUT VAL', [7,int(air)]) # AIR1  ON
+  sendSimServCmd(chamber,'SET DIGI_OUT VAL',[8,int(dryer)])  # DRYER ON
   print "Starting manual run..."
   sendSimServCmd(chamber,'START MANUAL',[1,1])
   
@@ -74,7 +74,9 @@ def main(args):
   # RUN & MONITOR
   target   = args.target
   gradient = args.gradient
-  startManualRun(chamber,target=target,gradient=gradient)
+  airon    = not args.noair
+  dryeron  = not args.nodryer
+  startManualRun(chamber,target=target,gradient=gradient,air=airon,dryer=dryeron)
   monitor(chamber,ymeteo1,ymeteo2,batch=args.batchmode,out=args.output,
                  nsamples=args.nsamples,tstep=args.stepsize,twidth=args.twidth)
   stopManualRun(chamber)

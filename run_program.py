@@ -48,9 +48,9 @@ def startProgram(chamber,prgmid,nruns=1):
   checkProgram(chamber,prgmid)
   print "Starting program %s..."%(prgmid)
   sendSimServCmd(chamber,'START PRGM',[prgmid,nruns])
-  #prgmname = str(sendSimServCmd(chamber,'GET PRGM NAME',[prgmid])[0])
-  #time.sleep(4)
-  #print "Started pogram '%s'"%(prgmname)
+  time.sleep(2)
+  prgmname = str(sendSimServCmd(chamber,'GET PRGM NAME')[0])
+  print "Started pogram '%s'"%(prgmname)
   
 
 def stopProgram(chamber):
