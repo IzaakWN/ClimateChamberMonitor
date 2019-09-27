@@ -147,8 +147,8 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
       axis1.grid(axis='x',which='minor',linewidth=0.2)
       axis1.grid(axis='x',which='major',linewidth=0.4,color='darkred',linestyle='--',dashes=(6,5))
       axis1.grid(axis='y',which='major',linewidth=0.2)
-      airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=2,markersize=4)
-      dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=1,markersize=4)
+      airline, = axis1.plot(tvals,airvals,color='red',marker='o',label="Compr. air",linewidth=3,markersize=4)
+      dryline, = axis1.plot(tvals,dryvals,color='blue',marker='^',label="Dryer",linewidth=2,markersize=4)
       legend1  = axis1.legend(loc='center left',framealpha=0.8,fontsize=13)
       legend1.get_frame().set_linewidth(0)
       
