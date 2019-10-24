@@ -85,7 +85,7 @@ def monitor(ymeteo1=None,ymeteo2=None,**kwargs):
         logreader = csv.reader(logfile)
         tnow   = datetime.datetime.now()
         tback  = tnow - dtback
-        for stamp, temp_YM1, temp_YM2, dewp_YM1, dewp_YM2, air, dry, run in logreader:
+        for stamp, temp_YM1, temp_YM2, dewp_YM1, dewp_YM2 in logreader:
           tval = datetime.datetime.strptime(stamp,tformat)
           if tval<tback: continue
           temp_YM1, temp_YM2, dewp_YM1, dewp_YM2 = float(temp_YM1), float(temp_YM2), float(dewp_YM1), float(dewp_YM2)
