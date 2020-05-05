@@ -37,6 +37,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
   twidth    = kwargs.get('twidth',      1000    )
   ymin      = kwargs.get('ymin',           8.   )
   ymax      = kwargs.get('ymax',          40.   )
+  warmup    = kwargs.get('warmup',     False    ) # force warm-up in interlock
   dtback    = datetime.timedelta(days=2) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.15*twidth)
@@ -68,14 +69,11 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          checkInterlock(chamber,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM1,warmup=warmup)
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          checkInterlock(chamber,temp,dewp_YM2)
-        else:
-          temp_YM2 = -1.
-          dewp_YM2 = -1.
+          checkInterlock(chamber,temp,dewp_YM2,warmup=warmup)
         air     = chamber.getAir()
         dry     = chamber.getDryer()
         run     = 0
@@ -251,7 +249,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo1:
           temp_YM1 = ymeteo1.getTemp()
           dewp_YM1 = ymeteo1.getDewp()
-          checkInterlock(chamber,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM1,warmup=warmup)
           dewpvals_YM1.append(dewp_YM1)
           tempvals_YM1.append(temp_YM1)
           dewpline_YM1.set_xdata(tvals)
@@ -261,7 +259,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
         if ymeteo2:
           temp_YM2 = ymeteo2.getTemp()
           dewp_YM2 = ymeteo2.getDewp()
-          checkInterlock(chamber,temp,dewp_YM1)
+          checkInterlock(chamber,temp,dewp_YM2,warmup=warmup)
           dewpvals_YM2.append(dewp_YM2)
           tempvals_YM2.append(temp_YM2)
           dewpline_YM2.set_xdata(tvals)
