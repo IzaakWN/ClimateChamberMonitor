@@ -37,7 +37,7 @@ def monitor(chamber,ymeteo1=None,ymeteo2=None,**kwargs):
   twidth    = kwargs.get('twidth',      1000    )
   ymin      = kwargs.get('ymin',           8.   )
   ymax      = kwargs.get('ymax',          40.   )
-  warmup    = kwargs.get('warmup',     False    ) # force warm-up in interlock
+  warmup    = kwargs.get('warmup',      True    ) # force warm-up in interlock
   dtback    = datetime.timedelta(days=2) # load only 1-day backlog for plot
   dtwidth   = datetime.timedelta(seconds=twidth)
   dtmargin  = datetime.timedelta(seconds=0.15*twidth)
@@ -318,6 +318,7 @@ def main(args):
     'nsamples':  args.nsamples,  # number of readings
     'tstep':     args.stepsize , # seconds
     'twidth':    args.twidth,    # width of time axis in seconds
+    'warmup':    args.warmup     # force warm-up during interlock
   }
   
   # CONNECT
@@ -352,6 +353,8 @@ if __name__ == '__main__':
                                            help="output log file with monitoring data (csv format)" )
   parser.add_argument('-b', '--batch',     dest='batchmode', default=False, action='store_true',
                                            help="monitor in batch mode (no GUI window)" )
+  parser.add_argument('-W', '--no-warm',   dest='warmup', default=True, action='store_false',
+                                           help="do NOT force warm-up during interlock (temp<dewp+5)" )
   parser.add_argument('-v', '--verbose',   dest='verbose', default=False, action='store_true',
                                            help="set verbose" )
   args = parser.parse_args()
