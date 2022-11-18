@@ -8,7 +8,7 @@ git clone https://github.com/IzaakWN/ClimateChamberMonitor ClimateChamberMonitor
 ```
 And set the correct IP address of LabEvent in `chamber_commands.py`, e.g.
 ```
-sed "s/ip='[^']*'/ip='130.60.164.144'/g" -i chamber_commands.py
+sed "s/ip = '[^']*'/ip = '130.60.164.144'/g" -i chamber_commands.py
 ```
 Submodules are automatically included: `statsd` and Yoctopuce python libraries. Update to the latest version:
 ```
